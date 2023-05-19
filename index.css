@@ -203,9 +203,7 @@ body {
 }
 #select_animation {
     position: absolute;
-    top: 0%;
-    right: -10%;
-    width: 120%;
-    height: 100%;
+    top: -5%;
+    right: -20%;
     z-index: -1;
 }
