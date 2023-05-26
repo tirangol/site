@@ -332,13 +332,14 @@ I like video games, music, and machine learning.
 
 And I study computer science and data science at the University of Toronto.
 
-Languages:
-- English
-- French
-- Mandarin
-
 Programming Languages:
-- sadasd
+- Python
+- Java
+- HTML/CSS
+- Javascript
+- C
+- R
+- Matlab
 
 Links:
 - Github
