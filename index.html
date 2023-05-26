@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -15,34 +16,51 @@
   </head>
   
   <body onmousemove="handleMouseMove(event)">
-    <div id="background">
-      <div id="c1" class="background_img"></div>
-      <div id="c2" class="background_img"></div>
-      <div id="c3" class="background_img"></div>
-      <div id="c4" class="background_img"></div>
-      <div id="c5" class="background_img"></div>
-      <div id="c6" class="background_img"></div>
-      <div id="c7" class="background_img"></div>
-      <div id="c8" class="background_img"></div>
-      <div id="c9" class="background_img"></div>
-      <div id="c10" class="background_img"></div>
-      <div id="c11" class="background_img"></div>
-      <div id="c12" class="background_img"></div>
-      <div id="c13" class="background_img"></div>
-    </div>
-    <div id="main_block">
-      <div id="h1_wrapper">
-        <h1>Richard Yin</h1>
+    <div id="container">
+      <div id='room_zoom'>
+        <div id="room">
+          <h1>About</h1>
+          <p>I like video games, music, and machine learning.</p>
+          <p>And I study computer science and data science at the University of Toronto.</p>
+
+        </div>
       </div>
-      <span>Rice Cake Enthusiast, LaTeX Hater</span>
-    </div>
-    <div id="menu_block">
-      <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()">About</h1>
-      <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()">Projects</h1>
-      <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()">Music</h1>
-      <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()">Resources</h1>
-      <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()">Resume</h1>
-      <canvas id="select_animation" width="350%" height="250%"></canvas>
+      <div class="tv" id="tv"></div>
+      <div class="tv" id="tv_screen"></div>
+      <div class="tv" id="tv_body"></div>  
+      <div id="stand"></div>
+      <div id="background">
+        <div id="c1" class="background_img"></div>
+        <div id="c2" class="background_img"></div>
+        <div id="c3" class="background_img"></div>
+        <div id="c4" class="background_img"></div>
+        <div id="c5" class="background_img"></div>
+        <div id="c6" class="background_img"></div>
+        <div id="c7" class="background_img"></div>
+        <div id="c8" class="background_img"></div>
+        <div id="c9" class="background_img"></div>
+        <div id="c10" class="background_img"></div>
+        <div id="c11" class="background_img"></div>
+        <div id="c12" class="background_img"></div>
+        <div id="c13" class="background_img"></div>
+      
+        <div id="name_block">
+          <div id="h1_wrapper">
+            <h1>Richard Yin</h1>
+          </div>
+          <span>Rice Cake Enthusiast, LaTeX Hater</span>
+        </div>
+    
+        <div id="menu_block">
+          <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="select(0)" onclick="goTo(0)">About</h1>
+          <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="select(1)" onclick="goTo(1)">Projects</h1>
+          <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="select(2)" onclick="goTo(2)">Music</h1>
+          <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="select(3)" onclick="goTo(3)">Resources</h1>
+          <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="select(4)" onclick="goTo(4)">Resume</h1>
+          <canvas id="select_animation" width="350%" height="250%"></canvas>
+        </div>
+
+      </div>
     </div>
   </body>
 </html>

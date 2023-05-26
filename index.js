@@ -10,8 +10,8 @@ function handleMouseMove(event) {
     cursorX = event.clientX;
     cursorY = event.clientY;
 
-    let zoom1 = zoomFactor * cursorX / screen.width;
-    let zoom2 = 2000 * zoomFactor * cursorY / screen.width;
+    let zoom1 = zoomFactor * (screen.width - cursorX) / screen.width;
+    let zoom2 = 1200 * zoomFactor * cursorY / screen.height;
     cssScaleMany(zoom1, zoom2, cZoom);
 }
 
@@ -44,12 +44,11 @@ function backgroundResize() {
     // low: 1441 x 810
     // med: 1920 x 1080
     // high: 3840 x 2160
-    function formatValue(size, i) {
-        return "background-image", "url(\"assets/" + size + "_resolution/c" + i + ".png\")";
-    }
     function updateImage(size) {
-        for (i = 0; i < 13; i++) {
-            cssSetId("c" + (i + 1), formatValue(size, i));
+        for (i = 1; i <= 13; i++) {
+            let property = "background-image";
+            let value = "url(\"assets/" + size + "_resolution/c" + i + ".png\")";
+            cssSetId("c" + i, property, value);
         }
     }
     let width = window.innerWidth;
@@ -65,6 +64,7 @@ function backgroundResize() {
     }
 }
 window.addEventListener('resize', backgroundResize);
+window.addEventListener('resize', updateBackgroundSize);
 
 
 /********************************************************
@@ -231,9 +231,10 @@ function updateParticleInfo(pInfo) {
 
 function resetParticleInfo(pInfo) {
     if (!pauseAnimation) {
-        let rand = randomInteger(0, 100);
+        let move = defaultStartX - defaultEndX;
+        let rand = randomInteger(0, move * 0.6);
         pInfo.set('startX',         defaultStartX - rand);
-        pInfo.set('endX',           defaultEndX + randomInteger(0, 50) + 100 - rand);
+        pInfo.set('endX',           defaultEndX + randomInteger(0, 50) + move * 0.6 - rand);
         pInfo.set('startY',         defaultStartY + randomInteger(-7, 3));
         pInfo.set('endY',           defaultEndY + randomInteger(2, 6));
         pInfo.set('startScale',     0.6 * Math.random() + 0.6);
@@ -264,3 +265,93 @@ function jumpParticleY(pInfo) {
     pInfo.set('endY', pInfo.get('endY') + diff * 42);
     pInfo.set('currY', pInfo.get('startY') + diff * 42);
 }
+
+/********************************************************
+ Select
+ ********************************************************/
+function select(i) {
+    let text = document.querySelector("#menu_block h1:nth-child(" + (i + 1) + ")");
+    let position = text.getBoundingClientRect();
+    let centerX = position.x + position.width / 2;
+    let centerY = position.y + position.height / 2;
+    let diffX = (cursorX - centerX) * 0.15;
+    let diffY = (cursorY - centerY) * -2;
+    
+    let value = 'rotateX(' + diffY + 'deg) rotateY(' + diffX + 'deg)';
+    text.style.transition = '0s';
+    text.style.transform = value;
+    setTimeout(() => {
+        text.style.transition = '0.5s';
+        text.style.transform = 'initial';
+    }, 100);
+}
+let currScreen = -1;
+function goTo(i) {
+    currScreen = i;
+    screenTransition(i);
+}
+
+function screenTransition(i) {
+    if (i == 0) {
+        cssSetId('tv', 'height', '65%');    cssSetId('tv_body', 'height', '65%');   cssSetId('tv_screen', 'height', '65%');
+        cssSetId('tv', 'bottom', '28%');    cssSetId('tv_body', 'bottom', '28%');   cssSetId('tv_screen', 'bottom', '28%');
+        cssSetId('tv', 'right', '8%');      cssSetId('tv_body', 'right', '8%');     cssSetId('tv_screen', 'right', '8%');
+        cssSetId("tv_body", 'z-index', '5');
+        cssSetId("tv_screen", 'z-index', '5');
+        cssSetId('stand', 'height', '55%');
+        cssSetId('stand', 'bottom', '-25%');
+        cssSetId('stand', 'right', '5.5%');
+        cssSetId('room_zoom', 'transform', 'scale(1) translate(0)');
+        cssSetId('background', 'transform', 'scale(0.35)');   
+        updateBackgroundSize();
+    }
+}
+function updateBackgroundSize() {
+    if (currScreen == -1) {
+        cssSetId('background', 'width', "100%");
+        cssSetId('background', 'height', "100%");
+        cssSetId('background', 'min-width', "1000px");
+        cssSetId('background', 'right', "0%");
+    } else if (currScreen == 0) {
+        let width = window.innerHeight * 1.3;
+        let height = window.innerHeight * 1.05;
+        let right = width * -0.155 + window.innerWidth * 0.08;
+        let bottom = height * -0.01;
+        cssSetId('menu_block', 'right', 'min(3.5%, calc(100% - 800px))');
+        cssSetId('background', 'width', width + "px");
+        cssSetId('background', 'height', height + "px");
+        cssSetId('background', 'min-width', "1px");
+        cssSetId('background', 'right', right + "px");
+        cssSetId('background', 'bottom', bottom + "px");
+    } 
+}
+
+/* About
+
+I like video games, music, and machine learning.
+
+And I study computer science and data science at the University of Toronto.
+
+Languages:
+- English
+- French
+- Mandarin
+
+Programming Languages:
+- sadasd
+
+Links:
+- Github
+- Musescore
+
+
+
+*/
+// About: zoom out, revealing current screen to be screen of TV of my current laptop
+// Projects: glitchy thing
+// Music: zoom up
+// Resources: cloud up?
+// Resume: no animation
+
+
+// https://sketchfab.com/3d-models/retro-70s-sony-trinitron-crt-tv-309572a900d2491fb0f992dce6d6af0e

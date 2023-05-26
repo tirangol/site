@@ -2,16 +2,92 @@ body {
     margin: 0px;
     padding: 0px;
 }
-#background {
-    /* background-image: url("assets/background.jpeg");
-    background-size: cover; */
-    background-color: rgba(0, 0, 0, 0.9);
+#container {
+    width: 100%;
+    height: 100%;
     position: absolute;
+    overflow: hidden;
+}
+.tv {
+    height: 335%;
+    bottom: -80%;
+    right: -58%;
+    aspect-ratio: 1.15;
+    /* height: 65%; */
+    /* bottom: 28%; */
+    /* right: 8%; */
+    position: absolute;
+    background-size: cover;
+    transition: 0.5s;
+}
+#tv {
+    z-index: -5;
+    filter: drop-shadow(0px 5px 3px rgba(0, 0, 0, 0.8));
+    background-image: url("assets/low_resolution/tv.png");
+}
+#tv_body {
+    z-index: -5;
+    background-image: url("assets/low_resolution/tv_body.png");
+}
+#tv_screen {
+    z-index: -5;
+    background-image: url('assets/low_resolution/tv_screen.png');
+    mix-blend-mode: multiply;
+}
+#stand {
+    height: 285%;
+    bottom: -333%;
+    aspect-ratio: 1.57;
+    right: -80%;
+    /* height: 55%; */
+    /* bottom: -25%; */
+    /* right: 5.5%; */
+    position: absolute;
+    z-index: -10;
+    filter: drop-shadow(0px 20px 20px rgba(0, 0, 0, 0.3));
+    background-image: url("assets/low_resolution/stand.png");
+    background-size: cover;
+    transition: 0.5s;
+}
+#room_zoom {
+    transform: scale(2) translate(10%);
+    /* transform: scale(1); */
+    transition: 0.5s;
+    height: 100%;
+    width: 100%;
     z-index: -999;
+    position: absolute;
+}
+#room {
+    background-image: url("assets/low_resolution/room.png");
+    background-size: cover;
+    background-position: 50% 50%;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: -999;
+}
+#room h1 {
+    margin-left: 50px;
+    font-size: 48pt;
+    font-family: "Baskervville";
+}
+#room p {
+    font-size: 18pt;
+    font-family: "Baskervville";
+    margin-left: 50px;
+    width: calc(40% * 40% - 100px);
+
+}
+#background {
+    position: absolute;
     width: 100%;
     height: 100%;
     overflow: hidden;
     min-width: 1000px;
+    /* transform: scale(0.4) */
+    transition: 0.5s;
+    z-index: 1;
 }
 .background_img {
     width: 100%;
@@ -34,37 +110,37 @@ body {
 #c12 { z-index: -907; background-image: url("assets/low_resolution/c12.png"); }
 #c13 { z-index: -912; background-image: url("assets/low_resolution/c13.png"); }
 
-#main_block {
+#name_block {
     position: absolute;
     width: 90%;
     /* background-color: rgba(0, 0, 0, 0.1); */
     bottom: 10%;
-    left: max(5%, 3rem);
+    left: max(5%, 36pt);
     user-select: none;
 }
-#main_block * {
+#name_block * {
     margin: 0px;
     padding: 0px;
 }
-#main_block:after {
+#name_block:after {
     content: '';
-    width: 45rem;
-    min-width: 45rem;
-    height: 10rem;
-    background-color: rgba(0, 0, 0, 0.1);
+    width: 700px;
+    min-width: 700px;
+    height: 100%;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.3) , rgba(0, 0, 0, 0.1));
     z-index: -1;
     position: absolute;
-    bottom: -0.5rem;
-    left: -0.5rem;
-    filter: blur(1rem);
+    bottom: -6pt;
+    left: -6pt;
+    filter: blur(12pt);
 }
-/* #main_block:active {
+/* #name_block:active {
     transform: rotateX(10deg) rotateY(10deg);
 } */
 #h1_wrapper h1 {
     /* font-family: 'Alata', Tahoma, Geneva, Verdana, sans-serif; */
     font-family: 'Poltawski Nowy', Georgia, Times, 'Times New Roman', serif;
-    font-size: 6.5rem;
+    font-size: 78pt;
     font-weight: 600;
     /* color: rgb(226, 252, 97); */
     color: transparent;
@@ -76,16 +152,16 @@ body {
     background-size: 250%;
     background-clip: text;
     -webkit-background-clip: text;
-    height: 6.5rem;
+    height: 78pt;
     transition: 0.2s ease-in-out;
     animation: move_h1_bg 60s infinite;
-    text-shadow: -0.3rem 0.3rem 0.3rem rgba(255, 255, 255, 0.3);
+    text-shadow: -3.6pt 3.6pt 3.6pt rgba(255, 255, 255, 0.3);
     margin: 0px;
-    min-width: 45rem;
+    min-width: 720px;
 }
 #h1_wrapper:hover {
     filter: brightness(150%);
-    text-shadow: -0.3rem 0.3rem 0.4rem rgba(255, 255, 255, 0.35);
+    text-shadow: -3.6pt 3.6pt 4.8pt rgba(255, 255, 255, 0.35);
 }
 @keyframes move_h1_bg {
     0% {
@@ -97,22 +173,22 @@ body {
     }
 }
 
-#main_block span {
+#name_block span {
     /* font-family: 'Jost', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
     font-family: 'Kreon', Tahoma, sans-serif;
     font-weight: 300;
-    font-size: 3rem;
+    font-size: 36pt;
     color: rgb(231, 231, 231);
-    text-shadow: 0rem 0rem 0.5rem rgba(0, 0, 0, 0.5);
+    text-shadow: 0pt 0pt 6pt rgba(0, 0, 0, 0.5);
     margin: 0px;
     padding: 0px;
     transition: 0.2s;
     display: block;
-    min-width: 50rem;
+    min-width: 800px;
 }
-#main_block span:hover {
+#name_block span:hover {
     color: rgb(244, 244, 244);
-    text-shadow: 0rem 0rem 0.7rem rgba(0, 0, 0, 0.7);
+    text-shadow: 0pt 0pt 8.4pt rgba(0, 0, 0, 0.7);
 }
 
 #menu_block {
@@ -129,40 +205,49 @@ body {
     color: rgba(222, 222, 222, 0.9);
     font-family: 'Lusitana', 'Times New Roman', Times, serif;
     font-weight: normal;
-    transition: 1s;
+    transition: 0.5s;
 }
 #menu_block h1:hover {
     color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0pt 0pt 6px rgba(0, 0, 0, 0.9);
+    text-shadow: 0pt 0pt 6pt rgba(0, 0, 0, 0.9);
+}
+#menu_block h1:active {
+    transition: 0s;
+    color: rgba(255, 255, 255, 1);
+    text-shadow: 0pt 0pt 10pt rgba(0, 0, 0, 1);
 }
 #menu_block h1:after {
     content: '';
     padding: 0pt 18pt;
-    background-size: cover;
     filter: invert(0.9);
     opacity: 0.9;
-    transition: 1s;
+    transition: 0.5s;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
 }
+
 #menu_block h1:hover:after {
-    filter: invert(1) drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.9));
+    filter: invert(1) drop-shadow(0px 0px 6pt rgba(0, 0, 0, 0.9));
 }
 #menu_block h1:nth-child(1):after {
     background-image: url("assets/about.png");
-    transform: scale(1.1);
+    background-size: 40pt;
 }
 #menu_block h1:nth-child(2):after {
     background-image: url("assets/projects.png");
-    transform: scale(0.9);
+    background-size: 35pt;
 }
 #menu_block h1:nth-child(3):after {
     background-image: url("assets/music.png");
+    background-size: 40pt;
 }
 #menu_block h1:nth-child(4):after {
     background-image: url("assets/resources.png");
+    background-size: 40pt;
 }
 #menu_block h1:nth-child(5):after {
     background-image: url("assets/resume.png");
-    transform: scale(0.75);
+    background-size: 35pt;
 }
 #select_animation {
     position: absolute;
