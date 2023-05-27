@@ -315,7 +315,7 @@ function updateBackgroundSize() {
     } else if (currScreen == 0) {
         let width = window.innerHeight * 1.3;
         let height = window.innerHeight * 1.05;
-        let right = width * -0.155 + window.innerWidth * 0.08;
+        let right = width * -0.155 + Math.max(window.innerWidth, 1000) * 0.08;
         let bottom = height * -0.01;
         cssSetId('menu_block', 'right', 'min(3.5%, calc(100% - 800px))');
         cssSetId('background', 'width', width + "px");
@@ -323,6 +323,9 @@ function updateBackgroundSize() {
         cssSetId('background', 'min-width', "1px");
         cssSetId('background', 'right', right + "px");
         cssSetId('background', 'bottom', bottom + "px");
+        let about = document.querySelector("#room span");
+        about.style.width = "max(calc(45% - " + (-5 * right - 0.5 * window.innerHeight + 350) + "px), 200px)";
+        about.style.margin = "75px " + (0.5 * right + 100) + "px";
     } 
 }
 
