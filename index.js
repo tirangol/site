@@ -296,8 +296,8 @@ function screenTransition(i) {
         cssSetId('tv', 'height', '65%');    cssSetId('tv_body', 'height', '65%');   cssSetId('tv_screen', 'height', '65%');
         cssSetId('tv', 'bottom', '28%');    cssSetId('tv_body', 'bottom', '28%');   cssSetId('tv_screen', 'bottom', '28%');
         cssSetId('tv', 'right', '8%');      cssSetId('tv_body', 'right', '8%');     cssSetId('tv_screen', 'right', '8%');
-        cssSetId("tv_body", 'z-index', '5');
-        cssSetId("tv_screen", 'z-index', '5');
+                                            cssSetId("tv_body", 'z-index', '5');    cssSetId("tv_screen", 'z-index', '5');
+                                                                                    cssSetId("tv_screen", 'opacity', '1');
         cssSetId('stand', 'height', '55%');
         cssSetId('stand', 'bottom', '-25%');
         cssSetId('stand', 'right', '5.5%');
@@ -313,8 +313,8 @@ function updateBackgroundSize() {
         cssSetId('background', 'min-width', "1000px");
         cssSetId('background', 'right', "0%");
     } else if (currScreen == 0) {
-        let width = window.innerHeight * 1.3;
-        let height = window.innerHeight * 1.05;
+        let width = Math.max(window.innerHeight, 600) * 1.3;
+        let height = Math.max(window.innerHeight, 600) * 1.05;
         let right = width * -0.155 + Math.max(window.innerWidth, 1000) * 0.08;
         let bottom = height * -0.01;
         cssSetId('menu_block', 'right', 'min(3.5%, calc(100% - 800px))');
@@ -323,19 +323,14 @@ function updateBackgroundSize() {
         cssSetId('background', 'min-width', "1px");
         cssSetId('background', 'right', right + "px");
         cssSetId('background', 'bottom', bottom + "px");
-        let about = document.querySelector("#room span");
-        about.style.width = "max(calc(45% - " + (-5 * right - 0.5 * window.innerHeight + 350) + "px), 200px)";
-        about.style.margin = "75px " + (0.5 * right + 100) + "px";
+        cssSetId('about', 'width', "max(calc(45% - " + (-5 * right - 0.45 * window.innerHeight + 350) + "px), 200px)");
+        cssSetId('about', 'margin', "75px " + (0.5 * right + 100) + "px");
     } 
 }
 
 /* About
 
-I like video games, music, and machine learning.
-
-And I study computer science and data science at the University of Toronto.
-
-Programming Languages:
+Languages:
 - Python
 - Java
 - HTML/CSS
@@ -343,12 +338,14 @@ Programming Languages:
 - C
 - R
 - Matlab
+- SQL
 
-Links:
+Links: 
 - Github
 - Musescore
+- Youtube
 
-
+Image Sources: ...
 
 */
 // About: zoom out, revealing current screen to be screen of TV of my current laptop
@@ -357,5 +354,4 @@ Links:
 // Resources: cloud up?
 // Resume: no animation
 
-
-// https://sketchfab.com/3d-models/retro-70s-sony-trinitron-crt-tv-309572a900d2491fb0f992dce6d6af0e
+// Font - Outfit
