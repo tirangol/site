@@ -35,7 +35,7 @@ body {
     z-index: -5;
     background-image: url('assets/low_resolution/tv_screen.png');
     mix-blend-mode: multiply;
-    opacity: 0;
+    filter: opacity(0);
 }
 #stand {
     height: 285%;
@@ -51,6 +51,7 @@ body {
     background-image: url("assets/low_resolution/stand.png");
     background-size: cover;
     transition: 0.5s;
+    z-index: 1;
 }
 #room_zoom {
     transform: scale(2) translate(10%);
@@ -138,10 +139,10 @@ body {
     transition: 0.2s;
 }
 .link_icon:hover {
-    filter: invert(0.15);
+    transform: scale(1.1);
 }
 .link_icon:active {
-    transform: scale(0.9);
+    filter: invert(0.15);
 }
 #musescore {
     background-image: url('assets/icons/musescore.png');
@@ -183,6 +184,8 @@ body {
 #c11 { z-index: -906; background-image: url("assets/low_resolution/c11.png"); }
 #c12 { z-index: -907; background-image: url("assets/low_resolution/c12.png"); }
 #c13 { z-index: -912; background-image: url("assets/low_resolution/c13.png"); }
+#c14 { z-index: 15; background-image: url("assets/low_resolution/c14.png"); transform: translate(0%, -100%); transition: 0.5s; }
+#c15 { z-index: 20; background-image: url("assets/low_resolution/c15.png"); transform: translate(0%, -100%); transition: 0.5s; }
 
 #name_block {
     position: absolute;

@@ -209,12 +209,10 @@ function updateParticleInfo(pInfo) {
         resetParticleInfo(pInfo);
         return pauseAnimation;
     } else if (pInfo.get('delay') > 0) {
-        if (diff != 0) {
+        if (diff != 0)
             jumpParticleY(pInfo);
-        }
-        if (!pauseAnimation) {
+        if (!pauseAnimation)
             pInfo.set('delay', pInfo.get('delay') - 1);
-        }
         return pauseAnimation;
     }
     let x = pInfo.get('currIteration') / pInfo.get('iterations')
@@ -292,27 +290,38 @@ function goTo(i) {
 }
 
 function screenTransition(i) {
-    if (i == 0) {
+    if (i == -1) {
+        cssSetId('background', 'width', "100%");
+        cssSetId('background', 'height', "100%");
+        cssSetId('background', 'min-width', "1000px");
+        cssSetId('background', 'right', "0%");
+    } else if (i == 0) {
         cssSetId('tv', 'height', '65%');    cssSetId('tv_body', 'height', '65%');   cssSetId('tv_screen', 'height', '65%');
         cssSetId('tv', 'bottom', '28%');    cssSetId('tv_body', 'bottom', '28%');   cssSetId('tv_screen', 'bottom', '28%');
         cssSetId('tv', 'right', '8%');      cssSetId('tv_body', 'right', '8%');     cssSetId('tv_screen', 'right', '8%');
                                             cssSetId("tv_body", 'z-index', '5');    cssSetId("tv_screen", 'z-index', '5');
-                                                                                    cssSetId("tv_screen", 'opacity', '1');
+                                                                                    cssSetId("tv_screen", 'filter', 'opacity(1)');
         cssSetId('stand', 'height', '55%');
         cssSetId('stand', 'bottom', '-25%');
         cssSetId('stand', 'right', '5.5%');
         cssSetId('room_zoom', 'transform', 'scale(1) translate(0)');
         cssSetId('background', 'transform', 'scale(0.35)');   
         updateBackgroundSize();
+    } else if (i == 1) {
+
+    } else if (i == 2) {
+        cssSetId('background', 'transform', 'translate(0, 100%)');
+        cssSetId('c14', 'transform', 'translate(0, 0%)');
+        cssSetId('c15', 'transform', 'translate(0, 0%)');
+    } else if (i == 3) {
+
+    } else if (i == 4) {
+
     }
 }
+
 function updateBackgroundSize() {
-    if (currScreen == -1) {
-        cssSetId('background', 'width', "100%");
-        cssSetId('background', 'height', "100%");
-        cssSetId('background', 'min-width', "1000px");
-        cssSetId('background', 'right', "0%");
-    } else if (currScreen == 0) {
+    if (currScreen == 0) {
         let width = Math.max(window.innerHeight, 600) * 1.3;
         let height = Math.max(window.innerHeight, 600) * 1.05;
         let right = width * -0.155 + Math.max(window.innerWidth, 1000) * 0.08;
@@ -325,7 +334,7 @@ function updateBackgroundSize() {
         cssSetId('background', 'bottom', bottom + "px");
         cssSetId('about', 'width', "max(calc(45% - " + (-5 * right - 0.45 * window.innerHeight + 350) + "px), 200px)");
         cssSetId('about', 'margin', "75px " + (0.5 * right + 100) + "px");
-    } 
+    }
 }
 
 /* About
