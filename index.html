@@ -15,7 +15,7 @@
     <title>Richard Yin</title>
   </head>
   
-  <body onmousemove="handleMouseMove(event)">
+  <body onmousemove="handleMouseMove(event)"">
     <div id="container">
       <div id='room_zoom'>
         <div id="room"></div>
@@ -47,8 +47,13 @@
       <div class="tv" id="tv_body"></div>  
       <div id="stand"></div>
 
+      <div id="music_block">
+        <h1>Music</h1>
+        <p>I'm a classically-trained pianist and flautist, as well as a music arranger and self-taught classical composer.</p>
+        <p>I post my works on Musescore, using the accounts trngl for classical music and slappysloop for video game and anime arrangements. I seldom post on my Youtube.</p>
+      </div>
+      <div id="blue"></div>
       <div id="c14" class="background_img"></div>
-      <div id="c15" class="background_img"></div>
       <div id="background">
         <div id="c1" class="background_img"></div>
         <div id="c2" class="background_img"></div>
@@ -63,7 +68,6 @@
         <div id="c11" class="background_img"></div>
         <div id="c12" class="background_img"></div>
         <div id="c13" class="background_img"></div>
-        
       
         <div id="name_block">
           <div id="h1_wrapper">
@@ -73,11 +77,11 @@
         </div>
     
         <div id="menu_block">
-          <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="select(0)" onclick="goTo(0)">About</h1>
-          <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="select(1)" onclick="goTo(1)">Projects</h1>
-          <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="select(2)" onclick="goTo(2)">Music</h1>
-          <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="select(3)" onclick="goTo(3)">Resources</h1>
-          <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="select(4)" onclick="goTo(4)">Resume</h1>
+          <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="select(event, 0)" onclick="goTo(0)">About</h1>
+          <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="select(event, 1)" onclick="goTo(1)">Projects</h1>
+          <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="select(event, 2)" onclick="goTo(2)">Music</h1>
+          <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="select(event, 3)" onclick="goTo(3)">Resources</h1>
+          <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="select(event, 4)" onclick="goTo(4)">Resume</h1>
           <canvas id="select_animation" width="350%" height="250%"></canvas>
         </div>
 

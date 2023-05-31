@@ -158,11 +158,10 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    overflow: hidden;
     min-width: 1000px;
     /* transform: scale(0.4) */
     transition: 0.5s;
-    z-index: 1;
+    z-index: 5;
 }
 .background_img {
     width: 100%;
@@ -175,7 +174,14 @@ body {
 #c2 { z-index: -909; background-image: url("assets/low_resolution/c2.png"); }
 #c3 { z-index: -910; background-image: url("assets/low_resolution/c3.png"); }
 #c4 { z-index: -901; background-image: url("assets/low_resolution/c4.png"); }
-#c5 { z-index: -900; background-image: url("assets/low_resolution/c5.png"); }
+#c5 {
+    z-index: -900;
+    background-image: url("assets/low_resolution/c5.png");
+    height: 200%;
+    bottom: 0%;
+    transform-origin: 50% 75%;
+    background-position: 50% 75%;
+}
 #c6 { z-index: -903; background-image: url("assets/low_resolution/c6.png"); }
 #c7 { z-index: -902; background-image: url("assets/low_resolution/c7.png"); }
 #c8 { z-index: -905; background-image: url("assets/low_resolution/c8.png"); }
@@ -184,8 +190,27 @@ body {
 #c11 { z-index: -906; background-image: url("assets/low_resolution/c11.png"); }
 #c12 { z-index: -907; background-image: url("assets/low_resolution/c12.png"); }
 #c13 { z-index: -912; background-image: url("assets/low_resolution/c13.png"); }
-#c14 { z-index: 15; background-image: url("assets/low_resolution/c14.png"); transform: translate(0%, -100%); transition: 0.5s; }
-#c15 { z-index: 20; background-image: url("assets/low_resolution/c15.png"); transform: translate(0%, -100%); transition: 0.5s; }
+#c14 {
+    z-index: 2;
+    background-image: url("assets/low_resolution/c14.png");
+    transform: translate(0%, -100%);
+    transition: 0.5s;
+    background-position: 50% 100%;
+    height: 150%;
+}
+#blue {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0, 96, 155);
+    position: absolute;
+    z-index: 1;
+}
+#music_block {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 3;
+}
 
 #name_block {
     position: absolute;
@@ -194,6 +219,7 @@ body {
     bottom: 10%;
     left: max(5%, 36pt);
     user-select: none;
+    z-index: 5;
 }
 #name_block * {
     margin: 0px;
@@ -275,6 +301,7 @@ body {
     text-align: right;
     user-select: none;
     cursor: pointer;
+    z-index: 5;
 }
 #menu_block h1 {
     line-height: 15pt;

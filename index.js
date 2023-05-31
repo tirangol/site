@@ -22,14 +22,22 @@ function cssSetId(id, property, value) {
 function cssScaleMany(zoom1, zoom2, cZoom) {
     function formatValue1(i) {
         let c = cZoom[i] * zoom1 + 1;
-        return "scale(" + c + ", " + c + ")";
+        if (i == 4) {
+            c = cZoom[i] * zoom1 * 0.75 + 1;
+        }
+            
+        let value = "scale(" + c + ", " + c + ")";
+        return value;
     }
     function formatValue2(i) {
         let c = cZoom[i] * zoom2 + 50;
+        if (i == 4) {
+            c = cZoom[i] * zoom2 * 0.5 + 75;
+        }
         return "50% " + c + "%";
     }
 
-    for (i = 0; i < 13; i++) {
+    for (let i = 0; i < 13; i++) {
         cssSetId("c" + (i + 1), "transform", formatValue1(i));
         cssSetId("c" + (i + 1), "background-position", formatValue2(i));
     }
@@ -45,7 +53,7 @@ function backgroundResize() {
     // med: 1920 x 1080
     // high: 3840 x 2160
     function updateImage(size) {
-        for (i = 1; i <= 13; i++) {
+        for (i = 1; i < 15; i++) {
             let property = "background-image";
             let value = "url(\"assets/" + size + "_resolution/c" + i + ".png\")";
             cssSetId("c" + i, property, value);
@@ -267,7 +275,10 @@ function jumpParticleY(pInfo) {
 /********************************************************
  Select
  ********************************************************/
-function select(i) {
+function select(event, i) {
+    cursorX = event.clientX;
+    cursorY = event.clientY;
+
     let text = document.querySelector("#menu_block h1:nth-child(" + (i + 1) + ")");
     let position = text.getBoundingClientRect();
     let centerX = position.x + position.width / 2;
@@ -299,7 +310,7 @@ function screenTransition(i) {
         cssSetId('tv', 'height', '65%');    cssSetId('tv_body', 'height', '65%');   cssSetId('tv_screen', 'height', '65%');
         cssSetId('tv', 'bottom', '28%');    cssSetId('tv_body', 'bottom', '28%');   cssSetId('tv_screen', 'bottom', '28%');
         cssSetId('tv', 'right', '8%');      cssSetId('tv_body', 'right', '8%');     cssSetId('tv_screen', 'right', '8%');
-                                            cssSetId("tv_body", 'z-index', '5');    cssSetId("tv_screen", 'z-index', '5');
+                                            cssSetId("tv_body", 'z-index', '6');    cssSetId("tv_screen", 'z-index', '6');
                                                                                     cssSetId("tv_screen", 'filter', 'opacity(1)');
         cssSetId('stand', 'height', '55%');
         cssSetId('stand', 'bottom', '-25%');
@@ -307,12 +318,14 @@ function screenTransition(i) {
         cssSetId('room_zoom', 'transform', 'scale(1) translate(0)');
         cssSetId('background', 'transform', 'scale(0.35)');   
         updateBackgroundSize();
+        cssSetId('background', 'overflow', 'hidden');
+        cssSetId('blue', 'display', 'none');
+        cssSetId('music_block', 'display', 'none');
     } else if (i == 1) {
 
     } else if (i == 2) {
-        cssSetId('background', 'transform', 'translate(0, 100%)');
-        cssSetId('c14', 'transform', 'translate(0, 0%)');
-        cssSetId('c15', 'transform', 'translate(0, 0%)');
+        cssSetId('background', 'transform', 'translate(0, 150%)');
+        cssSetId('c14', 'transform', 'translate(0%, 33.33%)');
     } else if (i == 3) {
 
     } else if (i == 4) {
