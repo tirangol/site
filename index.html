@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8">
     <meta name="" content="" width=device-width, initial-scale="1.0">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost&family=Kreon:wght@300&family=Zilla+Slab:wght@500&family=Lusitana:wght@400;700&family=Goudy+Bookletter+1911&family=IM+Fell+DW+Pica&family=Alegreya+SC:wght@500&family=Cardo&family=Alata&family=Jost&family=Poltawski+Nowy:wght@600&family=Baskervville:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost&family=Kreon:wght@300&family=Zilla+Slab:wght@500&family=Lusitana:wght@400;700&family=Goudy+Bookletter+1911&family=IM+Fell+DW+Pica:ital@0;1&family=Sofia+Sans+Extra+Condensed:wght@300;500&family=Alegreya+SC:wght@500&family=Cardo:ital,wght@0,400;0,700;1,400&family=Alata&family=Jost&family=Poltawski+Nowy:wght@600&family=Baskervville:ital@0;1&display=swap" rel="stylesheet">
     
     <link rel="icon" type="image/x-icon" href="assets/favicon.png">
     <link rel="stylesheet" href="index.css">
@@ -15,10 +15,22 @@
     <title>Richard Yin</title>
   </head>
   
-  <body onmousemove="handleMouseMove(event)"">
+  <body onmousemove="handleMouseMove(event)">
     <div id="container">
       <div id='room_zoom'>
         <div id="room"></div>
+      </div>
+
+	    <div id="link_block">
+        <a href="https://musescore.com/trngl" target="_blank">
+          <div class="link_icon" id="musescore"></div>
+        </a>
+        <a href="https://github.com/tirangol" target="_blank">
+          <div class="link_icon" id="github"></div>
+        </a>
+        <a href="https://www.youtube.com/@tirangol" target="_blank">
+          <div class="link_icon" id="youtube"></div>
+        </a>
       </div>
 
       <div id="about">
@@ -26,20 +38,7 @@
         <hr>
         <p>I like video games, classical music, and machine learning.</p>
         <p>And I study computer science and data science at the University of Toronto.</p>
-        <div id="about_inner">
-          Add physics simulations of programming language blocks
-          <div id="link_block">
-            <a href="https://musescore.com/trngl" target="_blank">
-              <div class="link_icon" id="musescore"></div>
-            </a>
-            <a href="https://github.com/tirangol/UofT" target="_blank">
-              <div class="link_icon" id="github"></div>
-            </a>
-            <a href="https://www.youtube.com/channel/UCRLORSKCanHbQW9_6iw__Gw" target="_blank">
-              <div class="link_icon" id="youtube"></div>
-            </a>
-          </div>
-        </div>
+		    <p>Website made by me.</p>
       </div>
 
       <div class="tv" id="tv"></div>
@@ -47,26 +46,69 @@
       <div class="tv" id="tv_body"></div>  
       <div id="stand"></div>
 
-      <div id="music_block">
-        <div id="m1" class="music_tab">
+      <div id='music_block'>
+        <div id='music_block_title'>
           <h1>Music</h1>
-          <p>I'm a classically-trained pianist and flautist, as well as an arranger and classical composer.</p>
-          <ul>
-            <li><a id="trngl" target="_blank" href="https://musescore.com/trngl">trngl</a> - compositions and arrangements, classical music</li>
-            <li><a id="slappysloop" target="_blank" href="https://musescore.com/slappysloop">slappysloop</a> - video game, anime, miscellaneous arrangements</li>
-            <li><a id="richard_y" target="_blank" href="https://www.youtube.com/@tirangol">Richard Y</a> - sheet music videos</li>
-          </ul>
-          <div class="cd" id="piano"><p>Ravel</p><p>Complete Works</p></div>
-          <!-- Classical music -->
-          <!-- Video game music -->
-          <!-- Anime music -->
-          <!-- Other -->
+          <p>Compositions, arrangements, recordings, and playlists.</p>
         </div>
+        <img src='assets/cd.png' id='cd'/>
+      
+        <div id='album_block'>
+          <div id='album_holder'>
+            <h1 id='album_section_title'>
+              <span>Classical</span> |
+              <span>Video Game</span> |
+              <span>Anime </span> |
+              <span>Other</span> |
+              <span>Playlists</span>
+            </h1>
+            <div id='album_classical_compositions_solo' class='album'>
+              <span> </span>
+              <h3>Soloist</h3>
+              <h2>Classical</h2>
+              <h1>Compositions</h1>
+            </div>
+          </div>
+          
+          <div id='album_descriptions'>
+            <h2>Classical Compositions, Solo</h2>
+            <table>
+              <tr>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Duration</th>
+              </tr>
+              <tr>
+                <td>Sonata no. 1 in E♭ Minor (Mov. 1)</td>
+                <td>2019</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>Prelude no. 1 in G# Minor</td>
+                <td>2019</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>Prelude no. 2 in F# Minor</td>
+                <td>2017</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>Pentanote Etude no. 1</td>
+                <td>2019</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>Miniature for Flute and Piano</td>
+                <td>2021</td>
+                <td>1</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>	  
 
-
-      </div>
-
-      <div id="blue"></div>
+      <div id="c15"></div>
       <div id="c14" class="background_img"></div>
       <div id="background">
         <div id="c1" class="background_img"></div>
@@ -91,14 +133,13 @@
         </div>
     
         <div id="menu_block">
-          <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="select(event, 0)" onclick="goTo(0)">About</h1>
-          <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="select(event, 1)" onclick="goTo(1)">Projects</h1>
-          <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="select(event, 2)" onclick="goTo(2)">Music</h1>
-          <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="select(event, 3)" onclick="goTo(3)">Resources</h1>
-          <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="select(event, 4)" onclick="goTo(4)">Resume</h1>
+          <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 0)" onclick="goToMenu(0)">About</h1>
+          <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 1)" onclick="goToMenu(1)">Projects</h1>
+          <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 2)" onclick="goToMenu(2)">Music</h1>
+          <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 3)" onclick="goToMenu(3)">Resources</h1>
+          <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 4)" onclick="goToMenu(4)">Resume</h1>
           <canvas id="select_animation" width="350%" height="250%"></canvas>
         </div>
-
       </div>
     </div>
   </body>
