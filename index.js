@@ -31,19 +31,18 @@ function scaleMainMenuBackground() {
 	
 	function formatValue1(i) {
         let c = cZoom[i] * zoom1 + 1;
-        if (i == 4) {
+        if (i == 4)
             c = cZoom[i] * zoom1 * 0.75 + 1;
-        }
             
         let value = "scale(" + c + ", " + c + ")";
         return value;
     }
     function formatValue2(i) {
         let c = cZoom[i] * zoom2 + 50;
-        if (i == 4) {
+        if (i == 4)
             c = cZoom[i] * zoom2 * 0.5 + 75;
-        }
-        return "50% " + c + "%";
+        
+		return "50% " + c + "%";
     }
 
     for (let i = 0; i < 13; i++) {
@@ -54,21 +53,28 @@ function scaleMainMenuBackground() {
 
 let rotateFactor = 0.01;
 function rotateAlbum() {	
-	let album = cssGetId('album_classical_compositions_solo');
+	let album = cssGetClass('album_active')[0];
+	/**
 	let albumRect = album.getBoundingClientRect();
 	let albumX = 0.5 * (albumRect.left + albumRect.right);
 	let albumY = 0.5 * (albumRect.top + albumRect.bottom);
+	**/
+	let albumX = 0.5 * (150 + 500);
+	let albumY = 0.5 * (0.2 * screen.height + 500);
 	let diffX = Math.min(Math.max(-rotateFactor * (cursorX - albumX), -10), 10);
 	let diffY = Math.min(Math.max(rotateFactor * (cursorY - albumY), -10), 10);
 	let transform = 'rotateX(' + diffY + 'deg) rotateY(' + diffX + 'deg)';
-	album.style.setProperty('transform', transform);
+	
+	cssSetClass('album', 'transform', transform);
 	cssSetId('album_section_title', 'transform-origin', albumX + 'px ' + albumY + 'px');
 	cssSetId('album_section_title', 'transform', transform);
-	
 }
 
 function findCss(queryProperty) {
 	return document.querySelector(queryProperty);
+}
+function findCssAll(queryProperty) {
+	return document.querySelectorAll(queryProperty);
 }
 
 /********************************************************
@@ -344,8 +350,7 @@ function selectMenu(event, i) {
 
 let currScreen = -1;	// Current menu
 function goToMenu(i) {
-	if (currScreen == i)
-		return
+	if (currScreen == i) return;
     currScreen = i;
 	if (i == -1)		goToOriginalMenu();
 	else if (i == 0)	goToAboutMenu();
@@ -357,10 +362,33 @@ function goToMenu(i) {
 }
 
 function goToOriginalMenu() {
+	/*
 	cssSetId('background', 'width', "100%");
     cssSetId('background', 'height', "100%");
     cssSetId('background', 'min-width', "1000px");
-    cssSetId('background', 'right', "0%");
+    cssSetId('background', 'right', "0%");*/
+	
+	cssSetId('background', 'transform', 'translate(0%, 0%)');
+    cssSetId('c14', 'transform', 'translate(0%, -100%)');
+	
+	cssSetId('music_block_title', 'right', '-500px');
+	cssSetId('cd', 'right', '-1000px');
+	cssSetId('album_block', 'top', '-100%');
+	
+	cssSetId('c5', 'display', 'block');
+	cssSetId('c5', 'transition', '0s');
+	cssSetId('c5', 'filter', 'opacity(1)');
+	
+	setTimeout(() => {
+		cssSetId('music_block', 'display', 'none');
+		cssSetId('music_block_back', 'display', 'none');
+		
+		cssSetId('music_block_title', 'right', '75px');
+		cssSetId('cd', 'right', '-300px');
+		cssSetId('album_block', 'top', '0%');
+	}, 300)
+	
+	scaleMainMenuBackground()
 }
 
 function goToAboutMenu() {
@@ -440,6 +468,7 @@ function updateBackgroundSize() {
 		seal.style.setProperty('height', (albumHeight / 7.5) + 'px');
 		
 		cssSetId('album_section_title', 'font-size', albumHeight / 30 + 'pt');
+		cssSetClass('album_section_title_active', 'font-size', albumHeight / 25 + 'pt');
 		rotateAlbum();
 	} else if (currScreen == 3) {
 		
@@ -453,17 +482,20 @@ function goToProjectsMenu() {
 }
 
 function goToMusicMenu() {
+	cssSetId('music_block', 'display', 'block');
 	cssSetId('background', 'transform', 'translate(0, 150%)');
     cssSetId('c14', 'transform', 'translate(0%, 33.33%)');
 	
 	setTimeout(() => {
 		cssSetId('c5', 'transition', '0.1s');
 		cssSetId('c5', 'filter', 'opacity(0)');
+		cssSetId('music_block_back', 'display', 'block');
 	}, 500);
 	setTimeout(() => {
 		cssSetId('c5', 'display', 'none');
 	}, 600);
-
+	
+	rotateAlbum();
 }
 
 function goToResourcesMenu() {
@@ -487,11 +519,6 @@ Languages:
 - Matlab
 - SQL
 
-Links: 
-- Github
-- Musescore
-- Youtube
-
 Image Sources: ...
 
 */
@@ -502,3 +529,174 @@ Image Sources: ...
 // Resume: no animation
 
 // Font - Outfit
+
+
+
+/********************************************************
+ Music Menu
+ ********************************************************/
+
+function cssGetPseudoElement(id, pseudo) {
+	return window.getComputedStyle(cssGetId(id), pseudo);
+}
+
+let currAlbum = 0;
+let totalAlbums = 0;
+setTimeout(() => {
+	currAlbum = parseInt(cssGetId('album_number').innerHTML.replace(/\D/g,''));
+	totalAlbums = parseInt(cssGetPseudoElement('album_number', ":after").getPropertyValue('content').replace(/\D/g,''));
+}, 100);
+
+function previousAlbum() {
+	if (currAlbum == 1)		currAlbum = totalAlbums;
+	else					currAlbum -= 1;
+	updateAlbumNumber();
+	updateAlbum();
+}
+function nextAlbum() {
+	if (currAlbum == totalAlbums)	currAlbum = 1;
+	else							currAlbum += 1;
+	updateAlbumNumber();
+	updateAlbum();
+}
+function updateAlbumNumber() {
+	let number = (currAlbum < 10) ? '0' + currAlbum : currAlbum;
+	let albumNumber = cssGetId('album_number');
+	albumNumber.innerHTML = number;
+}
+
+let albumNames = ['album_classical_compositions_solo', 'album_classical_arrangements'];
+function displayAlbum(number) {
+	let selected = cssGetClass('album_active')[0];
+	selected.classList.remove('album_active');
+	selected.style.setProperty('display', 'none');
+	
+	let album = cssGetId(albumNames[number]);
+	album.classList.add('album_active');
+	album.style.setProperty('display', 'block');
+}
+function updateAlbum() {
+	displayAlbum(currAlbum - 1);
+	if (currAlbum == 1) {
+		changeAlbumTitle('Classical Compositions, Solo');
+		changeAlbumTable('classical_compositions_solo');
+	} else if (currAlbum == 2) {
+		changeAlbumTitle('Classical Arrangements');
+		changeAlbumTable('classical_arrangements');
+	}
+}
+
+function findFirstDifferentIndex(from, to) {
+	if (from == to) return from.length;
+	let i = 0;
+	while (from[i] == to[i] && i < from.length && i < to.length) {
+		i += 1;
+	}
+	return i;
+}
+
+let typingSpeed = 10;
+function changeAlbumTitle(to) {
+	let titleElement = findCss('#album_descriptions h2');
+	let from = titleElement.innerHTML;
+	let startIndex = findFirstDifferentIndex(from, to);
+	let frames = [from];
+	
+	for (let i = 0; i < titleElement.innerHTML.length - startIndex; i++) {
+		let lastElement = frames[frames.length - 1];
+		frames.push(lastElement.slice(0, lastElement.length - 1));
+	}
+	for (let i = startIndex; i < to.length; i++) {
+		let lastElement = frames[frames.length - 1];
+		frames.push(lastElement + to.charAt(i));
+	}
+	for (let i = 0; i < frames.length; i++) {
+		setTimeout(() => {
+			titleElement.innerHTML = frames[i] + ((i != frames.length - 1) ? '|' : '');
+		}, i * typingSpeed)
+	}
+}
+
+// Title, Year, Duration, Instrumentation, Composer
+let albumInfo = {
+	classical_compositions_solo: 	[['Sonata no. 1 in E♭ Minor (Mov. 1)',		'2019', 'Piano',			''],
+									['Prelude no. 1 in G# Minor',				'2019', 'Piano',			''],
+									['Prelude no. 2 in F# Minor',				'2017', 'Piano',			''],
+									['Pentanote Etude no. 1',					'2019', 'Piano',			''],
+									['Miniature for Flute and Piano',			'2021', 'Piano, Flute',		'']],
+	classical_arrangements: 		[['Three Movements from "The Firebird"',	'2023', 'Concert Band',		'Stravinsky, Igor'],
+									['Toccata from "Le tombeau de Couperin"',	'2022', 'Wind Quintet',		'Ravel, Maurice'],
+									['À la manière de Borodine',				'2021', 'Orchestra',		'Ravel, Maurice'],
+									['Introduction et allegro',					'2022', 'Piano',			'Ravel, Maurice']]
+};
+let albumColumnWidths = {
+	classical_compositions_solo:	[60, 10, 30, 0],
+	classical_arrangements:			[50, 8, 17, 25]
+}
+function changeAlbumTable(to) {
+	let tableWidthInfo = albumColumnWidths[to];
+	let tableInfo = albumInfo[to];
+	let table = findCss('#album_descriptions table');
+	let tableBody = table.children[0];
+	
+	let headers = tableBody.children[0].children;
+	for (let i = 0; i < headers.length; i++) {
+		headers[i].style.setProperty('width', tableWidthInfo[i] + "%");
+	}
+	while (tableBody.children.length - 1 < tableInfo.length) {
+		let newRow = table.insertRow(tableBody.children.length);
+		let newCell1 = newRow.insertCell(0); newCell1.innerHTML = '';
+		let newCell2 = newRow.insertCell(1); newCell2.innerHTML = '';
+		let newCell3 = newRow.insertCell(2); newCell3.innerHTML = '';
+		let newCell4 = newRow.insertCell(3); newCell4.innerHTML = '';
+	}
+	
+	let numFrames = 8;
+	let frames = getAlbumTableFrames(tableBody.children, tableInfo, numFrames);
+	console.log(frames);
+	for (let i = 0; i < numFrames; i++) {
+		setTimeout(() => {
+			for (let j = 0; j < frames[i].length; j++) {
+				for (let k = 0; k < frames[i][j].length; k++) {
+					tableBody.children[j + 1].children[k].innerHTML = frames[i][j][k];
+				}
+			}
+		}, i * typingSpeed * 5);
+	}
+	setTimeout(() => {
+		while (tableBody.children.length - 1 > tableInfo.length) {
+			table.deleteRow(tableBody.children.length - 1);
+		}
+	}, numFrames * typingSpeed * 5);
+}
+function getAlbumTableFrames(rows, tableInfo, numFrames) {
+	let frames = [];
+	for (let i = 0; i < numFrames; i++) {
+		rowText = [];
+		for (let j = 1; j < rows.length; j++) {
+			cellText = [];
+			for (let k = 0; k < rows[j].children.length; k++) {
+				let cell = rows[j].children[k];
+				let oldText = cell.innerHTML;
+				let newText = (j - 1>= tableInfo.length) ? '' : tableInfo[j - 1][k];
+				let x = (i + 1) / numFrames;
+				let textLength = Math.round(oldText.length * (1 - x) + newText.length * x);
+				
+				let currText = '';
+				let oldWeight = 1 - x;
+				let noiseWeight = 3 * x * (1 - x);
+				let sumWeight = 1 + noiseWeight;
+				for (let l = 0; l < textLength; l++) {
+					let random = Math.random();
+					if (random < oldWeight / sumWeight && oldText.length > l)	currText += oldText[l];
+					else if (random < 1 / sumWeight && newText.length > l)		currText += newText[l];
+					else														currText += String.fromCharCode(Math.round(Math.random() * (126 - 32) + 32));						
+				}
+				cellText.push(currText);
+			}
+			rowText.push(cellText);
+		}
+		frames.push(rowText);
+	}
+	return frames
+}

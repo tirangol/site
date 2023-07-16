@@ -183,9 +183,19 @@ body {
 	display: block;
 }
 
-
+.album:before {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	display: block;
+	background-image: url('assets/ideas/5.jpg');
+	background-size: cover;
+	height: 300px;
+	width: calc(100% - 100px);
+	filter: saturate(0.5) brightness(0.66) blur(10px);
+	background-position: 50% 50%;
+}
 .album {
-	background-color: red;
 	height: 300px;
 	overflow: hidden;
 }
@@ -206,14 +216,21 @@ body {
 	table-layout: fixed;
 	width: calc(100% - 350px);
 }
-.album th:first-child {
+#album_classical_compositions_solo th:first-child {
 	width: 70%;
+}
+#album_classical_arrangements th:first-child {
+	width: 50%;
+}
+#album_classical_arrangements th:nth-child(2), #album_classical_arrangements th:nth-child(3) {
+	width: 15%;
 }
 .album tr:not(:first-child) {
 	transition: 0.3s;
 }
 .album tr:not(:first-child):hover {
 	color: rgba(255, 255, 255, 1);
+	background-color: rgba(255, 255, 255, 0.15);
 }
 .album th {
 	text-align: left;
@@ -221,11 +238,12 @@ body {
 	font-style: italic;
 	font-size: 18pt;
 	font-family: 'Ysabeau Infant', Garamond, Baskerville, Palatino, serif;
-	color: rgb(100, 100, 100);
+	color: rgb(150, 150, 150);
 }
 .album td {
 	font-size: 16pt;
 	font-family: 'Ysabeau Infant', Garamond, Baskerville, Palatino, serif;
+	color: rgb(222, 222, 222);
 }
 .album td:first-child:before {
 	content: '>>> ';
