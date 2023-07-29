@@ -80,32 +80,7 @@ function findCssAll(queryProperty) {
 /********************************************************
  Background Resizing
  ********************************************************/
-let resolution = "low";
-function backgroundResize() {
-    // low: 1441 x 810
-    // med: 1920 x 1080
-    // high: 3840 x 2160
-    function updateImage(size) {
-        for (i = 1; i < 15; i++) {
-            let property = "background-image";
-            let value = "url(\"assets/" + size + "_resolution/c" + i + ".png\")";
-            cssSetId("c" + i, property, value);
-        }
-    }
-    let width = window.innerWidth;
-    if (width <= 1920 && resolution != "low") {
-        updateImage("low");
-        resolution = "low";
-    } else if (width < 3000 && resolution != "med") {
-        updateImage("med");
-        resolution = "med";
-    } else if (resolution != "high") {
-        updateImage("high");
-        resolution = "high";
-    }
-}
-window.addEventListener('resize', backgroundResize);
-window.addEventListener('resize', updateBackgroundSize);
+window.addEventListener('resize', handleScreenResize);
 
 
 /********************************************************
@@ -159,7 +134,7 @@ function updateSelectAnimation() {
     
     context.clearRect(0, 0, canvas.width, canvas.height);
     drawParticles(context);
-    diff = 0;
+    menuDiff = 0;
 
     if (!doneAnimation) {
         setTimeout(() => {
@@ -175,21 +150,24 @@ let defaultEndX = 50;
 let defaultEndY = 15;
 let endXPositions = [60, 30, 60, 0, 30];
 
-let fps = 30;
-let maxIterations = 100;
+let fps = 60;
+let maxIterations = 33;
 let pauseAnimation = true; // Stop generating particles?
 let doneAnimation = true;  // Have all particles finished their iteration?
 
 let currSelect = 0; // Selected menu ID
-let diff = 0;       // Difference in current selected menu ID from previous selected menu ID
+let menuDiff = 0;       // Difference in current selected menu ID from previous selected menu ID
 
 function enterSelect(i) {
-    diff = i - currSelect;
+    menuDiff  = i - currSelect;
     currSelect = i;
     
-    defaultStartY += diff * 42;
-    defaultEndY += diff * 42;
+    defaultStartY += menuDiff * 42;
+    defaultEndY += menuDiff * 42;
     defaultEndX = endXPositions[i];
+	
+	defaultStartY = Math.min(Math.max(0, defaultStartY), 42 * 5);
+	defaultEndY = Math.min(Math.max(0, defaultStartY), 42 * 5);
     
     pauseAnimation = false;
     if (doneAnimation) {
@@ -265,9 +243,9 @@ function updateParticleInfo(pInfo) {
 		
 	// Waiting to start iterating	
     } else if (pInfo.get('delay') > 0) {
-        if (diff != 0)
+        if (menuDiff != 0) {
             jumpParticleY(pInfo);
-        if (!pauseAnimation)
+        } if (!pauseAnimation)
             pInfo.set('delay', pInfo.get('delay') - 1);
         return pauseAnimation;
     }
@@ -302,7 +280,7 @@ function resetParticleInfo(pInfo) {
         pInfo.set('currIteration',  0);
 			
         if (!pInfo.get('restartAnimation')) {
-            pInfo.set('delay',            randomInteger(0, maxIterations - 25) * fps / 100);
+            pInfo.set('delay',            randomInteger(0, maxIterations) * fps / 100);
             pInfo.set('restartAnimation', true);
         } else {
             pInfo.set('delay', 0);
@@ -318,9 +296,9 @@ function randomInteger(min, max) {
 }
 
 function jumpParticleY(pInfo) {
-    pInfo.set('startY', pInfo.get('startY') + diff * 42);
-    pInfo.set('endY', pInfo.get('endY') + diff * 42);
-    pInfo.set('currY', pInfo.get('startY') + diff * 42);
+    pInfo.set('startY', Math.min(5 * 42, Math.max(0, pInfo.get('startY') + menuDiff * 42)));
+    pInfo.set('endY', Math.min(5 * 42, Math.max(0, pInfo.get('endY') + menuDiff * 42)));
+    pInfo.set('currY', Math.min(5 * 42, Math.max(0, pInfo.get('startY') + menuDiff * 42)));
 }
 
 /********************************************************
@@ -348,17 +326,23 @@ function selectMenu(event, i) {
     }, 100);
 }
 
+let menuTransitioning = false;
 let currScreen = -1;	// Current menu
 function goToMenu(i) {
-	if (currScreen == i) return;
-    currScreen = i;
+	if (menuTransitioning || currScreen == i) return;
+	
+	menuTransitioning = true;
+	setTimeout(() => {menuTransitioning = false;}, 1000);
+	
 	if (i == -1)		goToOriginalMenu();
 	else if (i == 0)	goToAboutMenu();
 	else if (i == 1)	goToProjectsMenu();
 	else if (i == 2)	goToMusicMenu();
 	else if (i == 3)	goToResourcesMenu();
 	else if (i == 4)	goToResumeMenu();
-	updateBackgroundSize();
+	
+	currScreen = i;
+	handleScreenResize();
 }
 
 function goToOriginalMenu() {
@@ -367,26 +351,61 @@ function goToOriginalMenu() {
     cssSetId('background', 'height', "100%");
     cssSetId('background', 'min-width', "1000px");
     cssSetId('background', 'right', "0%");*/
-	
-	cssSetId('background', 'transform', 'translate(0%, 0%)');
-    cssSetId('c14', 'transform', 'translate(0%, -100%)');
-	
-	cssSetId('music_block_title', 'right', '-500px');
-	cssSetId('cd', 'right', '-1000px');
-	cssSetId('album_block', 'top', '-100%');
-	
-	cssSetId('c5', 'display', 'block');
-	cssSetId('c5', 'transition', '0s');
-	cssSetId('c5', 'filter', 'opacity(1)');
-	
-	setTimeout(() => {
-		cssSetId('music_block', 'display', 'none');
-		cssSetId('music_block_back', 'display', 'none');
+	if (currScreen == 0) {
+		cssSetId('tv', 'height', '');   cssSetId('tv_body', 'height', '');  	cssSetId('tv_screen', 'height', '');
+		cssSetId('tv', 'bottom', '');   cssSetId('tv_body', 'bottom', '');  	cssSetId('tv_screen', 'bottom', '');
+		cssSetId('tv', 'right', '');   	cssSetId('tv_body', 'right', ''); 		cssSetId('tv_screen', 'right', '');
+																				cssSetId("tv_screen", 'opacity', '0');
+		cssSetId('stand', 'height', '285%');
+		cssSetId('stand', 'bottom', '-333%');
+		cssSetId('stand', 'right', '-80%');
+		cssSetId('room_zoom', 'transform', 'scale(2) translate(10%)');
 		
-		cssSetId('music_block_title', 'right', '75px');
-		cssSetId('cd', 'right', '-300px');
-		cssSetId('album_block', 'top', '0%');
-	}, 300)
+		cssSetId('background', 'width', '100%');
+		cssSetId('background', 'height', '100%');
+		cssSetId('background', 'min-width', '1000px');
+		cssSetId('background', 'right', '0px');
+		cssSetId('background', 'bottom', '0px');
+		cssSetId('background', 'transform', 'scale(1)');
+		cssSetId('background', 'transition', '0.5s');
+		cssSetId('music_block', 'display', 'none');
+		
+		setTimeout(() => {
+			cssSetId('background', 'overflow', 'visible');
+			cssSetId('c15', 'display', 'block');
+			cssSetId("tv_body", 'z-index', '-5');
+			cssSetId("tv_screen", 'z-index', '-5');
+		}, 500);
+		
+	} else if (currScreen == 1) {
+		
+	} else if (currScreen == 2) {
+		cssSetId('background', 'transform', 'translate(0%, 0%)');
+		cssSetId('c14', 'transform', 'translate(0%, -100%)');
+		
+		cssSetId('music_block_title', 'right', '-500px');
+		cssSetId('cd', 'right', '-1000px');
+		cssSetId('album_block', 'top', '-100%');
+		
+		cssSetId('c5', 'display', 'block');
+		cssSetId('c5', 'transition', '0s');
+		cssSetId('c5', 'filter', 'opacity(1)');
+		
+		cssSetId('c13', 'transition', '0s');
+		cssSetId('c13', 'background-position', '50% 0%');
+		
+		setTimeout(() => {
+			cssSetId('music_block', 'display', 'none');
+			cssSetId('music_block_back', 'display', 'none');
+			cssSetId('c13', 'transition', '0s');
+			
+			cssSetId('music_block_title', 'right', '75px');
+			cssSetId('cd', 'right', '-300px');
+			cssSetId('album_block', 'top', '0%');
+		}, 500)
+	}
+	
+	
 	
 	scaleMainMenuBackground()
 }
@@ -395,8 +414,8 @@ function goToAboutMenu() {
 	cssSetId('tv', 'height', '65%');    cssSetId('tv_body', 'height', '65%');   cssSetId('tv_screen', 'height', '65%');
 	cssSetId('tv', 'bottom', '27%');    cssSetId('tv_body', 'bottom', '27%');   cssSetId('tv_screen', 'bottom', '27%');
 	cssSetId('tv', 'right', '120px');   cssSetId('tv_body', 'right', '120px');  cssSetId('tv_screen', 'right', '120px');
-                                        cssSetId("tv_body", 'z-index', '6');    cssSetId("tv_screen", 'z-index', '6');
-                                                                                cssSetId("tv_screen", 'filter', 'opacity(1)');
+                                        cssSetId("tv_body", 'z-index', '11');   cssSetId("tv_screen", 'z-index', '11');
+                                                                                cssSetId("tv_screen", 'opacity', '1');
     cssSetId('stand', 'height', '55%');
 	cssSetId('stand', 'bottom', '-25%');
 	cssSetId('stand', 'right', '75px');
@@ -406,10 +425,6 @@ function goToAboutMenu() {
 	cssSetId('background', 'overflow', 'hidden');
 	cssSetId('c15', 'display', 'none');
 	cssSetId('music_block', 'display', 'none');
-		
-	setTimeout(() => {
-		cssSetId('background', 'transition', '0s');
-	}, 100);
 }
 
 function cssGetClass(className) {
@@ -417,33 +432,35 @@ function cssGetClass(className) {
 }
 function cssSetClass(className, property, value) {
 	let elements = cssGetClass(className)
-	for (let i = 0; i < elements.length; i++) {
-		elements[i].style.setProperty(property, value);
+	for (let element of elements) {
+		element.style.setProperty(property, value);
 	}
 }
 
-function updateBackgroundSize() {
+function handleScreenResize() {
 	let windowWidth = Math.max(window.innerWidth, 1000);
 	let windowHeight = Math.max(window.innerHeight, 600);
     
 	if (currScreen == 0) {	
 		cssSetId('about', 'width', 'calc(100% - ' + (0.65 * windowHeight + 500) + "px)");
+		cssSetId('about_background', 'width', 'calc(100% - ' + (0.65 * windowHeight + 500) + "px)");
         // cssSetId('about', 'width', (windowWidth - 1.5 * tvWidth - 75) + "px");
 		
-		let width = windowHeight * 1.3;
+		let width = windowHeight * 1.4;
         let height = windowHeight * 1.05;
-        let right = width * -0.155 + windowWidth * 0.08;
+        let right = -width / 11 + 30;
         let bottom = height * -0.01;
 		cssSetId('background', 'width', width + "px");
         cssSetId('background', 'height', height + "px");
         cssSetId('background', 'min-width', "1px");
         cssSetId('background', 'right', right + "px");
         cssSetId('background', 'bottom', bottom + "px");
+		
+		setTimeout(() => {cssSetId('background', 'transition', '0s');}, 750);
     } else if (currScreen == 1) {
 		
 	} else if (currScreen == 2) {
-		let albumHeight = windowHeight * 0.8 - 300 * windowHeight / windowWidth + 100;
-		albumHeight = Math.min(albumHeight, 700);
+		let albumHeight = Math.min(700, windowHeight * 0.8 - 300 * windowHeight / windowWidth + 100);
 		cssSetId('album_holder', 'height', albumHeight + "px");
 		cssSetId('album_holder', 'top', 0.6 * (windowHeight - albumHeight) + "px");
 		cssSetId('album_descriptions', 'width', 'calc(100% - 245px - ' + albumHeight + 'px)');
@@ -467,9 +484,9 @@ function updateBackgroundSize() {
 		seal.style.setProperty('width', (albumHeight / 15) + 'px');
 		seal.style.setProperty('height', (albumHeight / 7.5) + 'px');
 		
-		cssSetId('album_section_title', 'font-size', albumHeight / 30 + 'pt');
-		cssSetClass('album_section_title_active', 'font-size', albumHeight / 25 + 'pt');
-		rotateAlbum();
+		let albumSectionTitles = findCssAll('#album_section_title span');
+		albumSectionTitles.forEach(x => x.style.setProperty('font-size', albumHeight / 35 + 'pt'));
+		cssSetClass('album_section_title_active', 'font-size', albumHeight / 30 + 'pt');
 	} else if (currScreen == 3) {
 		
 	} else if (currScreen == 4) {
@@ -485,8 +502,11 @@ function goToMusicMenu() {
 	cssSetId('music_block', 'display', 'block');
 	cssSetId('background', 'transform', 'translate(0, 150%)');
     cssSetId('c14', 'transform', 'translate(0%, 33.33%)');
+	cssSetId('c13', 'transition', '0.1s');
+	cssSetId('c13', 'background-position', '50% 0%');
 	
 	setTimeout(() => {
+		cssSetId('c13', 'transition', '0s');
 		cssSetId('c5', 'transition', '0.1s');
 		cssSetId('c5', 'filter', 'opacity(0)');
 		cssSetId('music_block_back', 'display', 'block');
@@ -530,12 +550,25 @@ Image Sources: ...
 
 // Font - Outfit
 
+document.onkeydown = checkKey;
+function checkKey(e) {
+	e = e || window.event;
+	
+	if (e.keyCode == 27)
+		goToMenu(-1)
+	else if (currScreen == 2) {
+		if (e.keyCode == 37)
+			previousAlbum();
+		else if (e.keyCode == 39)
+			nextAlbum();
+	}
+}
+
 
 
 /********************************************************
  Music Menu
  ********************************************************/
-
 function cssGetPseudoElement(id, pseudo) {
 	return window.getComputedStyle(cssGetId(id), pseudo);
 }
@@ -547,17 +580,38 @@ setTimeout(() => {
 	totalAlbums = parseInt(cssGetPseudoElement('album_number', ":after").getPropertyValue('content').replace(/\D/g,''));
 }, 100);
 
+function skipToAlbum(number) {
+	if (currAlbum == number + 1) return;
+	currAlbum = number + 1;
+	updateAlbumNumber();
+	updateAlbum();
+	updateAlbumSectionTitle();
+}
+function updateAlbumSectionTitle() {
+	let oldActive = cssGetClass('album_section_title_active')[0];
+	let i;
+	if (currAlbum <= 2)			i = 0;
+	else if (currAlbum <= 6) 	i = 1;
+	else if (currAlbum == 7)	i = 2;
+	else if (currAlbum == 8)	i = 3;
+	let newActive = findCssAll('#album_section_title span')[i];
+	oldActive.classList.remove('album_section_title_active');
+	newActive.classList.add('album_section_title_active');
+	handleScreenResize();
+}
 function previousAlbum() {
 	if (currAlbum == 1)		currAlbum = totalAlbums;
 	else					currAlbum -= 1;
 	updateAlbumNumber();
 	updateAlbum();
+	updateAlbumSectionTitle();
 }
 function nextAlbum() {
 	if (currAlbum == totalAlbums)	currAlbum = 1;
 	else							currAlbum += 1;
 	updateAlbumNumber();
 	updateAlbum();
+	updateAlbumSectionTitle();
 }
 function updateAlbumNumber() {
 	let number = (currAlbum < 10) ? '0' + currAlbum : currAlbum;
@@ -565,25 +619,26 @@ function updateAlbumNumber() {
 	albumNumber.innerHTML = number;
 }
 
-let albumNames = ['album_classical_compositions_solo', 'album_classical_arrangements'];
-function displayAlbum(number) {
+function updateAlbum() {
+	let albumName = albumNames[currAlbum - 1];
+	let albumId = 'album_' + albumName.toLowerCase().replaceAll(',', '').replaceAll(' ', '_');	
+	
+	// displayAlbum(albumId);
+	changeAlbumTitle(albumName);
+	changeAlbumTable(albumId);
+}
+
+let albumNames = ['Classical Compositions, Solo', 'Classical Arrangements', 'Xenoblade Chronicles',
+				  'Fire Emblem', 'The Great Ace Attorney', 'Video Games, Other', 'Anime', 'Other'];
+
+function displayAlbum(albumName) {
 	let selected = cssGetClass('album_active')[0];
 	selected.classList.remove('album_active');
 	selected.style.setProperty('display', 'none');
 	
-	let album = cssGetId(albumNames[number]);
+	let album = cssGetId(albumName);
 	album.classList.add('album_active');
 	album.style.setProperty('display', 'block');
-}
-function updateAlbum() {
-	displayAlbum(currAlbum - 1);
-	if (currAlbum == 1) {
-		changeAlbumTitle('Classical Compositions, Solo');
-		changeAlbumTable('classical_compositions_solo');
-	} else if (currAlbum == 2) {
-		changeAlbumTitle('Classical Arrangements');
-		changeAlbumTable('classical_arrangements');
-	}
 }
 
 function findFirstDifferentIndex(from, to) {
@@ -619,22 +674,77 @@ function changeAlbumTitle(to) {
 
 // Title, Year, Duration, Instrumentation, Composer
 let albumInfo = {
-	classical_compositions_solo: 	[['Sonata no. 1 in E♭ Minor (Mov. 1)',		'2019', 'Piano',			''],
-									['Prelude no. 1 in G# Minor',				'2019', 'Piano',			''],
-									['Prelude no. 2 in F# Minor',				'2017', 'Piano',			''],
-									['Pentanote Etude no. 1',					'2019', 'Piano',			''],
-									['Miniature for Flute and Piano',			'2021', 'Piano, Flute',		'']],
-	classical_arrangements: 		[['Three Movements from "The Firebird"',	'2023', 'Concert Band',		'Stravinsky, Igor'],
-									['Toccata from "Le tombeau de Couperin"',	'2022', 'Wind Quintet',		'Ravel, Maurice'],
-									['À la manière de Borodine',				'2021', 'Orchestra',		'Ravel, Maurice'],
-									['Introduction et allegro',					'2022', 'Piano',			'Ravel, Maurice']]
+	album_classical_compositions_solo: 	[['Sonata no. 1 in E♭ Minor (Mov. 1)',		'2019', 'Piano',			''],
+										['Prelude no. 1 in G# Minor',				'2019', 'Piano',			''],
+										['Prelude no. 2 in F# Minor',				'2017', 'Piano',			''],
+										['Pentanote Etude no. 1',					'2019', 'Piano',			''],
+										['Miniature for Flute and Piano',			'2021', 'Piano, Flute',		'']],
+	album_classical_arrangements: 		[['Three Movements from "The Firebird"',	'2023', 'Concert Band',		'Stravinsky, Igor'],
+										['Toccata from "Le tombeau de Couperin"',	'2022', 'Wind Quintet',		'Ravel, Maurice'],
+										['À la manière de Borodine',				'2021', 'Orchestra',		'Ravel, Maurice'],
+										['Introduction et allegro',					'2022', 'Piano',			'Ravel, Maurice']],
+	album_xenoblade_chronicles:			[['Agniratha, Mechonis Capital (Daytime)',	'2020',	'Ensemble',		''],
+										['Mechonis Field',							'2023', 'Piano',		''],
+										['The End Lies Ahead',						'2022', 'Ensemble',		''],
+										['Colony 9 (Daytime)',						'2020', 'Ensemble',		''],
+										['Gaur Plains (Daytime)',					'2020',	'Piano',		''],
+										['Millick Meadow (Daytime)',				'2023', 'Piano',		'']],
+	album_fire_emblem:					[['Fire Emblem: Radiant Dawn Medley',		'2023', 'Piano',		''],
+										['Proud Flight',							'2023', 'Ensemble',		''],
+										['Path of the Hero King',					'2023', 'Piano',		'']],
+	album_the_great_ace_attorney:		[['Pursuit ~ Time for a Great Turnabout',	'2021',	'Ensemble',		''],
+										['The Great Cross-Examination',				'2022',	'Ensemble',		''],
+										['Naruhodou Ryuutarou - Objection!',		'2021', 'Ensemble',		'']],
+	album_video_games_other:			[['The One Ruling Everything',				'2022', 'Ensemble',		'The Last Story'],
+										["Team, This One's Stronger!",				'2022', 'Piano',		'Bug Fables'],
+										['Here We Are',								'2020', 'Ensemble',		'Undertale'],
+										['Snowy',									'2020', 'Ensemble',		'Undertale'],
+										['Ruins',									'2018', 'Ensemble',		'Undertale'],
+										['Faint Courage',							'2022', 'Ensemble',		'Deltarune'],
+										['Autumn Mountain Battle',					'2021', 'Piano',		'Paper Mario'],
+										['Geometry Dash OST Collection',			'2023', 'Piano',		'Geometry Dash'],
+										['Persona 5 Piano Medley',					'2020',	'Piano',		'Persona 5'],
+										['KK Lovers',								'2023', 'Ensemble',		'Animal Crossing']],
+	album_anime:						[['Kami-iro Awase',							'2021',	'OP',	'Danganronpa 3'],
+										['Shadow and Truth',						'2022',	'OP',	'ACCA 13-ku Kansatsu-ka'],
+										['Seija no Koushin',						'2022', 'OP',	'Heion Sedai no Itaden-tachi'],
+										['Shinzou wo Sasageyo!',					'2017', 'OP',	'Attack on Titan'],
+										['Re:Re',									'2017',	'OP',	'Boku dake ga Inai Machi'],
+										['Sore wa Chiisana Hikari no Youna',		'2022', 'ED',	'Boku dake ga Inai Machi'],
+										['Mushishi no Theme',						'2016',	'OST',	'Mushishi'],
+										['La parfum de fleurs',						'2020',	'OST',	'Yuri!!! on Ice'],
+										['Mephisto',								'2023', 'ED',	'Oshi no Ko'],
+										['The Beautiful World',						'2022', 'ED',	'Kino no Tabi'],
+										['Reason',									'2021',	'ED',	'Hunter x Hunter'],
+										['Nagareboshi Kirari',						'2021',	'ED',	'Hunter x Hunter'],
+										['Hyori Ittai',								'2020',	'ED',	'Hunter x Hunter']],
+	album_other:						[['Warhead',								'2023', 'Ensemble',		'Zircon'],
+										['Lit Fuse',								'2023', 'Piano',		'Cacola'],
+										["The Undertaker's Daughter",				'2020',	'Piano',		'Steampianist']]
 };
 let albumColumnWidths = {
-	classical_compositions_solo:	[60, 10, 30, 0],
-	classical_arrangements:			[50, 8, 17, 25]
-}
+	album_classical_compositions_solo:	[60, 10, 30, 0],
+	album_classical_arrangements:		[50, 8, 17, 25],
+	album_xenoblade_chronicles:			[60, 10, 30, 0],
+	album_fire_emblem:					[60, 10, 30, 0],
+	album_the_great_ace_attorney:		[60, 10, 30, 0],
+	album_video_games_other:			[42, 8, 15, 35],
+	album_anime:						[40, 8, 10, 42],
+	album_other:						[50, 8, 17, 25]
+};
+let albumColumnTitles = {
+	album_classical_compositions_solo:	['Title', 'Year', 'For', ''],
+	album_classical_arrangements:		['Title', 'Year', 'For', 'Composer'],
+	album_xenoblade_chronicles:			['Title', 'Year', 'For', ''],
+	album_fire_emblem:					['Title', 'Year', 'For', ''],
+	album_the_great_ace_attorney:		['Title', 'Year', 'For', ''],
+	album_video_games_other:			['Title', 'Year', 'For', 'Video Game'],
+	album_anime:						['Title', 'Year', 'For', 'Anime'],
+	album_other:						['Title', 'Year', 'For', 'Composer']
+};
 function changeAlbumTable(to) {
 	let tableWidthInfo = albumColumnWidths[to];
+	let tableColumnInfo = albumColumnTitles[to];
 	let tableInfo = albumInfo[to];
 	let table = findCss('#album_descriptions table');
 	let tableBody = table.children[0];
@@ -652,33 +762,41 @@ function changeAlbumTable(to) {
 	}
 	
 	let numFrames = 8;
-	let frames = getAlbumTableFrames(tableBody.children, tableInfo, numFrames);
-	console.log(frames);
+	let frames = getAlbumTableFrames(tableBody.children, tableInfo, numFrames, tableColumnInfo);
 	for (let i = 0; i < numFrames; i++) {
 		setTimeout(() => {
 			for (let j = 0; j < frames[i].length; j++) {
 				for (let k = 0; k < frames[i][j].length; k++) {
-					tableBody.children[j + 1].children[k].innerHTML = frames[i][j][k];
+					try { tableBody.children[j].children[k].innerHTML = frames[i][j][k]; } catch (err) {}
 				}
 			}
-		}, i * typingSpeed * 5);
+		}, i * typingSpeed * 4);
 	}
 	setTimeout(() => {
 		while (tableBody.children.length - 1 > tableInfo.length) {
 			table.deleteRow(tableBody.children.length - 1);
 		}
-	}, numFrames * typingSpeed * 5);
+	}, numFrames * typingSpeed * 4);
 }
-function getAlbumTableFrames(rows, tableInfo, numFrames) {
+function getAlbumTableFrames(rows, tableInfo, numFrames, tableColumnInfo) {
 	let frames = [];
 	for (let i = 0; i < numFrames; i++) {
 		rowText = [];
-		for (let j = 1; j < rows.length; j++) {
+		for (let j = 0; j < rows.length; j++) {
 			cellText = [];
 			for (let k = 0; k < rows[j].children.length; k++) {
 				let cell = rows[j].children[k];
 				let oldText = cell.innerHTML;
-				let newText = (j - 1>= tableInfo.length) ? '' : tableInfo[j - 1][k];
+				let newText;
+				if (j == 0) 						newText = tableColumnInfo[k];	// Changing header
+				else if (j - 1 >= tableInfo.length)	newText = '';					// Row will no longer exist
+				else								newText = tableInfo[j - 1][k];  // Default row change
+				
+				if (oldText == newText) {
+					cellText.push(newText);
+					continue;
+				}
+				
 				let x = (i + 1) / numFrames;
 				let textLength = Math.round(oldText.length * (1 - x) + newText.length * x);
 				

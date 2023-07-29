@@ -7,9 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Jost&family=Kreon:wght@300&family=Zilla+Slab:wght@500&family=Lusitana:wght@400;700&family=Goudy+Bookletter+1911&family=IM+Fell+DW+Pica:ital@0;1&family=Sofia+Sans+Extra+Condensed:wght@300;500&family=Cardo:ital,wght@0,400;0,700;1,400&family=Alata&family=Jost&family=Poltawski+Nowy:wght@600&family=Baskervville:ital@0;1&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost&family=Kreon:wght@300&family=Zilla+Slab:wght@400;500&family=Lusitana:wght@400;700&family=Goudy+Bookletter+1911&family=IM+Fell+DW+Pica:ital@0;1&family=Sofia+Sans+Extra+Condensed:wght@300;500&family=Cardo:ital,wght@0,400;0,700;1,400&family=Alata&family=Jost&family=Poltawski+Nowy:wght@600&family=Baskervville:ital@0;1&family=Ysabeau+Infant:wght@400;700&family=Fira+Sans+Condensed:wght@400&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/x-icon" href="assets/favicon.png">
   <link rel="stylesheet" href="index.css">
@@ -26,14 +24,19 @@
 
     <div id="link_block">
       <a href="https://musescore.com/trngl" target="_blank">
-        <div class="link_icon" id="musescore"></div>
+        <div class="link_icon" id="musescore"><span>Musescore</span></div>
       </a>
       <a href="https://github.com/tirangol" target="_blank">
-        <div class="link_icon" id="github"></div>
+        <div class="link_icon" id="github"><span>Github</span></div>
       </a>
       <a href="https://www.youtube.com/@tirangol" target="_blank">
-        <div class="link_icon" id="youtube"></div>
+        <div class="link_icon" id="youtube"><span>Youtube</span></div>
       </a>
+    </div>
+
+    <div id="setting_block">
+      <div class="setting_icon" id="language"><span>Language</span></div>
+      <div class="setting_icon" id="sources"><span>Sources</span></div>
     </div>
 
     <div id="about">
@@ -43,10 +46,12 @@
       <p>And I study computer science and data science at the University of Toronto.</p>
       <p>Website made by me. Graphics were edited but not made by me.</p>
     </div>
+    <div id='about_background'></div>
 
     <div class="tv" id="tv"></div>
-    <div class="tv" id="tv_screen"></div>
+    <div class="tv" id="tv_screen" onclick='goToMenu(-1)'></div>
     <div class="tv" id="tv_body"></div>
+    <!--<canvas class='tv' id='tv_static'></canvas>-->
     <div id="stand"></div>
 
     <div id='music_block'>
@@ -59,10 +64,10 @@
       <div id='album_block'>
         <div id='album_holder'>
           <h1 id='album_section_title'>
-            <span class='album_section_title_active'>Classical</span> |
-            <span>Video Game</span> |
-            <span>Anime </span> |
-            <span>Other</span> |
+            <span onclick='skipToAlbum(0)' class='album_section_title_active'>Classical</span> |
+            <span onclick='skipToAlbum(2)'>Video Game</span> |
+            <span onclick='skipToAlbum(6)'>Anime </span> |
+            <span onclick='skipToAlbum(7)'>Other</span> |
             <span>Recording</span> |
             <span>Playlist</span>
           </h1>
@@ -153,16 +158,11 @@
       </div>
 
       <div id="menu_block">
-        <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 0)"
-          onclick="goToMenu(0)">About</h1>
-        <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 1)"
-          onclick="goToMenu(1)">Projects</h1>
-        <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 2)"
-          onclick="goToMenu(2)">Music</h1>
-        <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 3)"
-          onclick="goToMenu(3)">Resources</h1>
-        <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 4)"
-          onclick="goToMenu(4)">Resume</h1>
+        <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 0)" onclick="goToMenu(0)">About</h1>
+        <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 1)" onclick="goToMenu(1)">Projects</h1>
+        <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 2)" onclick="goToMenu(2)">Music</h1>
+        <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 3)" onclick="goToMenu(3)">Resources</h1>
+        <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 4)" onclick="goToMenu(4)">Resume</h1>
         <canvas id="select_animation" width="350%" height="250%"></canvas>
       </div>
     </div>
