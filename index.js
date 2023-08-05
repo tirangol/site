@@ -51,9 +51,12 @@ function scaleMainMenuBackground() {
     }
 }
 
+let rotating = false;
 let rotateFactor = 0.01;
+let rotateDiffX;
+let rotateDiffY;
 function rotateAlbum() {	
-	let album = cssGetClass('album_active')[0];
+	let album = cssGetId('album');
 	/**
 	let albumRect = album.getBoundingClientRect();
 	let albumX = 0.5 * (albumRect.left + albumRect.right);
@@ -61,11 +64,13 @@ function rotateAlbum() {
 	**/
 	let albumX = 0.5 * (150 + 500);
 	let albumY = 0.5 * (0.2 * screen.height + 500);
-	let diffX = Math.min(Math.max(-rotateFactor * (cursorX - albumX), -10), 10);
-	let diffY = Math.min(Math.max(rotateFactor * (cursorY - albumY), -10), 10);
-	let transform = 'rotateX(' + diffY + 'deg) rotateY(' + diffX + 'deg)';
+	rotateDiffY = Math.min(Math.max(-rotateFactor * (cursorX - albumX), -10), 10);
+	rotateDiffX = Math.min(Math.max(rotateFactor * (cursorY - albumY), -10), 10);
 	
-	cssSetClass('album', 'transform', transform);
+	if (rotating)	return;
+	
+	let transform = 'rotateX(' + rotateDiffX + 'deg) rotateY(' + rotateDiffY + 'deg)';
+	album.style.setProperty('transform', transform);
 	cssSetId('album_section_title', 'transform-origin', albumX + 'px ' + albumY + 'px');
 	cssSetId('album_section_title', 'transform', transform);
 }
@@ -159,7 +164,7 @@ let currSelect = 0; // Selected menu ID
 let menuDiff = 0;       // Difference in current selected menu ID from previous selected menu ID
 
 function enterSelect(i) {
-    menuDiff  = i - currSelect;
+    menuDiff = i - currSelect;
     currSelect = i;
     
     defaultStartY += menuDiff * 42;
@@ -332,7 +337,7 @@ function goToMenu(i) {
 	if (menuTransitioning || currScreen == i) return;
 	
 	menuTransitioning = true;
-	setTimeout(() => {menuTransitioning = false;}, 1000);
+	setTimeout(() => {menuTransitioning = false;}, 750);
 	
 	if (i == -1)		goToOriginalMenu();
 	else if (i == 0)	goToAboutMenu();
@@ -397,6 +402,7 @@ function goToOriginalMenu() {
 		setTimeout(() => {
 			cssSetId('music_block', 'display', 'none');
 			cssSetId('music_block_back', 'display', 'none');
+			cssSetId('music_block_album_scroll', 'display', 'none');
 			cssSetId('c13', 'transition', '0s');
 			
 			cssSetId('music_block_title', 'right', '75px');
@@ -464,34 +470,72 @@ function handleScreenResize() {
 		cssSetId('album_holder', 'height', albumHeight + "px");
 		cssSetId('album_holder', 'top', 0.6 * (windowHeight - albumHeight) + "px");
 		cssSetId('album_descriptions', 'width', 'calc(100% - 245px - ' + albumHeight + 'px)');
-		
-		let h1 = findCss('#album_classical_compositions_solo h1');
-		let h2 = findCss('#album_classical_compositions_solo h2');
-		let h3 = findCss('#album_classical_compositions_solo h3');
-		h1.style.setProperty('font-size', (albumHeight / 9.5) + "pt");
-		h2.style.setProperty('font-size', (albumHeight / 14.25) + 'pt');
-		h3.style.setProperty('font-size', (albumHeight / 24.43) + 'pt');
-		h1.style.setProperty('right', (albumHeight / 20) + "px");
-		h1.style.setProperty('bottom', (albumHeight / 30) + "px");
-		h2.style.setProperty('right', (albumHeight / 3.3) + "px");
-		h2.style.setProperty('bottom', (albumHeight / 7.5) + "px");
-		h3.style.setProperty('right', (albumHeight / 1.9) + "px");
-		h3.style.setProperty('bottom', (albumHeight / 5.9) + "px");
-		
-		let seal = findCss('#album_classical_compositions_solo span');
-		seal.style.setProperty('top', (albumHeight / 20) + 'px');
-		seal.style.setProperty('right', (albumHeight / 20) + 'px');
-		seal.style.setProperty('width', (albumHeight / 15) + 'px');
-		seal.style.setProperty('height', (albumHeight / 7.5) + 'px');
+		if (!rotating)
+			updateAlbumDetails(albumHeight);
 		
 		let albumSectionTitles = findCssAll('#album_section_title span');
 		albumSectionTitles.forEach(x => x.style.setProperty('font-size', albumHeight / 35 + 'pt'));
 		cssSetClass('album_section_title_active', 'font-size', albumHeight / 30 + 'pt');
+		
+		let musicBlockAlbumScroll = cssGetId('music_block_album_scroll');
+		musicBlockAlbumScroll.style.setProperty('height', window.innerWidth + 'px');
 	} else if (currScreen == 3) {
 		
 	} else if (currScreen == 4) {
 		
 	}
+}
+
+let albumDetails = [[['font-size', 7.125, 'right', 20, 'bottom', 30],	['font-size', 10.6875, 'right', 3.3, 'bottom', 7.5],	['font-size', 18.3225, 'right', 1.9, 'bottom', 5.9],	['top', 20, 'right', 20, 'width', 15, 'height', 7.5]],
+					[['font-size', 10, 'right', 20, 'top', 11.3],		['font-size', 18, 'right', 3.9, 'top', 5.7],			['font-size', 30, 'right', 20, 'top', 25],				['left', 3.1, 'top', 12, 'width', 1.49, 'height', 5.5]],
+					[[], [], [], []],
+					[[], [], [], []],
+					[[], [], [], []],
+					[[], [], [], []],
+					[[], [], [], []],
+					[[], [], [], []]];
+
+function updateAlbumDetails(albumHeight) {
+	let h1 = findCss('#album h1');
+	let h2 = findCss('#album h2');
+	let h3 = findCss('#album h3');
+	let seal = findCss('#album div');
+	
+	function removeCss(item) {
+		item.style.removeProperty('left');
+		item.style.removeProperty('top');
+		item.style.removeProperty('right');
+		item.style.removeProperty('bottom');
+		item.style.removeProperty('width');
+		item.style.removeProperty('height');
+	}
+	removeCss(h1);
+	removeCss(h2);
+	removeCss(h3);
+	removeCss(seal);
+	
+	let albumDetail = albumDetails[currAlbum - 1];
+	for (let i = 0; i < albumDetail[0].length; i += 2) { h1.style.setProperty(albumDetail[0][i], (albumHeight / albumDetail[0][i + 1]) + 'px'); }
+	for (let i = 0; i < albumDetail[1].length; i += 2) { h2.style.setProperty(albumDetail[1][i], (albumHeight / albumDetail[1][i + 1]) + 'px'); }
+	for (let i = 0; i < albumDetail[2].length; i += 2) { h3.style.setProperty(albumDetail[2][i], (albumHeight / albumDetail[2][i + 1]) + 'px'); }
+	for (let i = 0; i < albumDetail[3].length; i += 2) { seal.style.setProperty(albumDetail[3][i], (albumHeight / albumDetail[3][i + 1]) + 'px'); }
+	
+	/*
+	h1.style.setProperty('font-size', (albumHeight / 9.5) + "pt");
+	h2.style.setProperty('font-size', (albumHeight / 14.25) + 'pt');
+	h3.style.setProperty('font-size', (albumHeight / 24.43) + 'pt');
+	h1.style.setProperty('right', (albumHeight / 20) + "px");
+	h1.style.setProperty('bottom', (albumHeight / 30) + "px");
+	h2.style.setProperty('right', (albumHeight / 3.3) + "px");
+	h2.style.setProperty('bottom', (albumHeight / 7.5) + "px");
+	h3.style.setProperty('right', (albumHeight / 1.9) + "px");
+	h3.style.setProperty('bottom', (albumHeight / 5.9) + "px");
+	
+	seal.style.setProperty('top', (albumHeight / 20) + 'px');
+	seal.style.setProperty('right', (albumHeight / 20) + 'px');
+	seal.style.setProperty('width', (albumHeight / 15) + 'px');
+	seal.style.setProperty('height', (albumHeight / 7.5) + 'px');
+	*/
 }
 
 function goToProjectsMenu() {
@@ -510,6 +554,7 @@ function goToMusicMenu() {
 		cssSetId('c5', 'transition', '0.1s');
 		cssSetId('c5', 'filter', 'opacity(0)');
 		cssSetId('music_block_back', 'display', 'block');
+		cssSetId('music_block_album_scroll', 'display', 'block');
 	}, 500);
 	setTimeout(() => {
 		cssSetId('c5', 'display', 'none');
@@ -575,13 +620,21 @@ function cssGetPseudoElement(id, pseudo) {
 
 let currAlbum = 0;
 let totalAlbums = 0;
-setTimeout(() => {
+
+function onHTMLLoad() {
 	currAlbum = parseInt(cssGetId('album_number').innerHTML.replace(/\D/g,''));
 	totalAlbums = parseInt(cssGetPseudoElement('album_number', ":after").getPropertyValue('content').replace(/\D/g,''));
-}, 100);
+	
+	let spans = findCssAll('#music_block_album_scroll span');
+	for (let i = 0; i < spans.length; i++) {
+		spans[i].style.setProperty('background-image', "url('assets/albums/album_" + albumImages[i] + "')")
+	}
+}
 
 function skipToAlbum(number) {
-	if (currAlbum == number + 1) return;
+	if (rotating || currAlbum == number + 1) 		return;
+	else if (currAlbum < number + 1) 	albumRotateNext = true;
+	else								albumRotateNext = false;
 	currAlbum = number + 1;
 	updateAlbumNumber();
 	updateAlbum();
@@ -600,15 +653,19 @@ function updateAlbumSectionTitle() {
 	handleScreenResize();
 }
 function previousAlbum() {
+	if (rotating)	return;
 	if (currAlbum == 1)		currAlbum = totalAlbums;
 	else					currAlbum -= 1;
+	albumRotateNext = false;
 	updateAlbumNumber();
 	updateAlbum();
 	updateAlbumSectionTitle();
 }
 function nextAlbum() {
+	if (rotating)	return;
 	if (currAlbum == totalAlbums)	currAlbum = 1;
 	else							currAlbum += 1;
+	albumRotateNext = true;
 	updateAlbumNumber();
 	updateAlbum();
 	updateAlbumSectionTitle();
@@ -623,22 +680,45 @@ function updateAlbum() {
 	let albumName = albumNames[currAlbum - 1];
 	let albumId = 'album_' + albumName.toLowerCase().replaceAll(',', '').replaceAll(' ', '_');	
 	
-	// displayAlbum(albumId);
+	displayAlbum(albumId);
 	changeAlbumTitle(albumName);
 	changeAlbumTable(albumId);
 }
 
-let albumNames = ['Classical Compositions, Solo', 'Classical Arrangements', 'Xenoblade Chronicles',
-				  'Fire Emblem', 'The Great Ace Attorney', 'Video Games, Other', 'Anime', 'Other'];
+let albumNames = ['Classical Compositions, Solo', 'Classical Arrangements', 'Xenoblade Chronicles OST',
+				  'Fire Emblem OST', 'The Great Ace Attorney OST', 'Video Game OSTs, Other', 'Anime OSTs', 'Other'];
+let albumImages = ['classical_compositions_solo.jpg', 'classical_arrangements.jpg', 'unknown.jpg', 'unknown.jpg',
+					'unknown.jpg', 'unknown.jpg', 'unknown.jpg', 'unknown.jpg'];
 
-function displayAlbum(albumName) {
-	let selected = cssGetClass('album_active')[0];
-	selected.classList.remove('album_active');
-	selected.style.setProperty('display', 'none');
-	
-	let album = cssGetId(albumName);
-	album.classList.add('album_active');
-	album.style.setProperty('display', 'block');
+let albumRotateNext = true;
+let albumDisplayFrames = 60;
+function displayAlbum(albumId) {
+	if (rotating)	return;
+	let album = cssGetId('album');
+	let albumSectionTitle = cssGetId('album_section_title');
+	rotating = true;
+	for (let i = 1; i <= albumDisplayFrames; i++) {
+		let x = i / albumDisplayFrames;
+		setTimeout(() => {
+			let rotation = rotateDiffY;
+			if (albumRotateNext)	rotation += 180 * x;
+			else					rotation -= 180 * x;
+			if (i >= Math.round(albumDisplayFrames / 2))
+				rotation += 180;
+			album.style.setProperty('transform', 'rotateX(' + rotateDiffX + 'deg) rotateY(' + rotation + 'deg)');
+			if (i == Math.round(albumDisplayFrames / 2)) {
+				let windowWidth = Math.max(window.innerWidth, 1000);
+				let windowHeight = Math.max(window.innerHeight, 600);
+				let albumHeight = Math.min(700, windowHeight * 0.8 - 300 * windowHeight / windowWidth + 100);
+				album.style.setProperty('background-image', "url('assets/albums/" + albumImages[currAlbum - 1] + "')");
+				album.classList.remove(album.classList[0]);
+				album.classList.add(albumId);
+				updateAlbumDetails(albumHeight);
+			}
+			if (i == albumDisplayFrames)
+				rotating = false;
+		}, 150 * (2 / (1 + Math.exp(-2.2 * (x - 0.5)))) - 0.5);
+	}
 }
 
 function findFirstDifferentIndex(from, to) {
@@ -683,19 +763,19 @@ let albumInfo = {
 										['Toccata from "Le tombeau de Couperin"',	'2022', 'Wind Quintet',		'Ravel, Maurice'],
 										['À la manière de Borodine',				'2021', 'Orchestra',		'Ravel, Maurice'],
 										['Introduction et allegro',					'2022', 'Piano',			'Ravel, Maurice']],
-	album_xenoblade_chronicles:			[['Agniratha, Mechonis Capital (Daytime)',	'2020',	'Ensemble',		''],
+	album_xenoblade_chronicles_ost:		[['Agniratha, Mechonis Capital (Daytime)',	'2020',	'Ensemble',		''],
 										['Mechonis Field',							'2023', 'Piano',		''],
 										['The End Lies Ahead',						'2022', 'Ensemble',		''],
 										['Colony 9 (Daytime)',						'2020', 'Ensemble',		''],
 										['Gaur Plains (Daytime)',					'2020',	'Piano',		''],
 										['Millick Meadow (Daytime)',				'2023', 'Piano',		'']],
-	album_fire_emblem:					[['Fire Emblem: Radiant Dawn Medley',		'2023', 'Piano',		''],
+	album_fire_emblem_ost:				[['Fire Emblem: Radiant Dawn Medley',		'2023', 'Piano',		''],
 										['Proud Flight',							'2023', 'Ensemble',		''],
 										['Path of the Hero King',					'2023', 'Piano',		'']],
-	album_the_great_ace_attorney:		[['Pursuit ~ Time for a Great Turnabout',	'2021',	'Ensemble',		''],
+	album_the_great_ace_attorney_ost:	[['Pursuit ~ Time for a Great Turnabout',	'2021',	'Ensemble',		''],
 										['The Great Cross-Examination',				'2022',	'Ensemble',		''],
 										['Naruhodou Ryuutarou - Objection!',		'2021', 'Ensemble',		'']],
-	album_video_games_other:			[['The One Ruling Everything',				'2022', 'Ensemble',		'The Last Story'],
+	album_video_game_osts_other:		[['The One Ruling Everything',				'2022', 'Ensemble',		'The Last Story'],
 										["Team, This One's Stronger!",				'2022', 'Piano',		'Bug Fables'],
 										['Here We Are',								'2020', 'Ensemble',		'Undertale'],
 										['Snowy',									'2020', 'Ensemble',		'Undertale'],
@@ -705,7 +785,7 @@ let albumInfo = {
 										['Geometry Dash OST Collection',			'2023', 'Piano',		'Geometry Dash'],
 										['Persona 5 Piano Medley',					'2020',	'Piano',		'Persona 5'],
 										['KK Lovers',								'2023', 'Ensemble',		'Animal Crossing']],
-	album_anime:						[['Kami-iro Awase',							'2021',	'OP',	'Danganronpa 3'],
+	album_anime_osts:					[['Kami-iro Awase',							'2021',	'OP',	'Danganronpa 3'],
 										['Shadow and Truth',						'2022',	'OP',	'ACCA 13-ku Kansatsu-ka'],
 										['Seija no Koushin',						'2022', 'OP',	'Heion Sedai no Itaden-tachi'],
 										['Shinzou wo Sasageyo!',					'2017', 'OP',	'Attack on Titan'],
@@ -725,21 +805,21 @@ let albumInfo = {
 let albumColumnWidths = {
 	album_classical_compositions_solo:	[60, 10, 30, 0],
 	album_classical_arrangements:		[50, 8, 17, 25],
-	album_xenoblade_chronicles:			[60, 10, 30, 0],
-	album_fire_emblem:					[60, 10, 30, 0],
-	album_the_great_ace_attorney:		[60, 10, 30, 0],
-	album_video_games_other:			[42, 8, 15, 35],
-	album_anime:						[40, 8, 10, 42],
+	album_xenoblade_chronicles_ost:		[60, 10, 30, 0],
+	album_fire_emblem_ost:				[60, 10, 30, 0],
+	album_the_great_ace_attorney_ost:	[60, 10, 30, 0],
+	album_video_game_osts_other:		[42, 8, 15, 35],
+	album_anime_osts:					[40, 8, 10, 42],
 	album_other:						[50, 8, 17, 25]
 };
 let albumColumnTitles = {
 	album_classical_compositions_solo:	['Title', 'Year', 'For', ''],
 	album_classical_arrangements:		['Title', 'Year', 'For', 'Composer'],
-	album_xenoblade_chronicles:			['Title', 'Year', 'For', ''],
-	album_fire_emblem:					['Title', 'Year', 'For', ''],
-	album_the_great_ace_attorney:		['Title', 'Year', 'For', ''],
-	album_video_games_other:			['Title', 'Year', 'For', 'Video Game'],
-	album_anime:						['Title', 'Year', 'For', 'Anime'],
+	album_xenoblade_chronicles_ost:		['Title', 'Year', 'For', ''],
+	album_fire_emblem_ost:				['Title', 'Year', 'For', ''],
+	album_the_great_ace_attorney_ost:	['Title', 'Year', 'For', ''],
+	album_video_game_osts_other:		['Title', 'Year', 'For', 'Video Game'],
+	album_anime_osts:					['Title', 'Year', 'For', 'Anime'],
 	album_other:						['Title', 'Year', 'For', 'Composer']
 };
 function changeAlbumTable(to) {
@@ -805,6 +885,10 @@ function getAlbumTableFrames(rows, tableInfo, numFrames, tableColumnInfo) {
 				let noiseWeight = 3 * x * (1 - x);
 				let sumWeight = 1 + noiseWeight;
 				for (let l = 0; l < textLength; l++) {
+					if (oldText[l] == newText[l]) {
+						currText += oldText[l];
+						continue;
+					}
 					let random = Math.random();
 					if (random < oldWeight / sumWeight && oldText.length > l)	currText += oldText[l];
 					else if (random < 1 / sumWeight && newText.length > l)		currText += newText[l];

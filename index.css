@@ -24,18 +24,18 @@ body {
 }
 #tv {
     z-index: -5;
-    background-image: url("assets/low_resolution/tv.png");
+    background-image: url("assets/low_resolution/tvo.png");
 	filter: drop-shadow(-75px 50px 15px rgba(0, 0, 0, 0.4));
 }
 #tv_body {
     z-index: -5;
-    background-image: url("assets/low_resolution/tv_body.png");
+    background-image: url("assets/low_resolution/tv_bodyo.png");
     filter: drop-shadow(-2px 8px 5px rgba(65, 42, 37, 0.9));
 	pointer-events: none;
 }
 #tv_screen {
     z-index: -5;
-    background-image: url('assets/low_resolution/tv_screen.png');
+    background-image: url('assets/low_resolution/tv_screeno.png');
     mix-blend-mode: multiply;
     opacity: 0;
 	cursor: pointer;
@@ -51,7 +51,7 @@ body {
     position: absolute;
     z-index: -10;
     filter: drop-shadow(0px 20px 20px rgba(0, 0, 0, 0.3)) drop-shadow(-75px 50px 25px rgba(0, 0, 0, 0.5));
-    background-image: url("assets/low_resolution/stand.png");
+    background-image: url("assets/low_resolution/stando.png");
     background-size: cover;
     transition: 0.5s;
     z-index: 1;
@@ -66,7 +66,7 @@ body {
     position: absolute;
 }
 #room {
-    background-image: url("assets/low_resolution/roomoo.png");
+    background-image: url("assets/low_resolution/roomaa.png");
     background-size: cover;
     background-position: 50% 50%;
     height: 100%;
@@ -82,6 +82,7 @@ body {
     border-style: solid;
     border-color: rgba(255, 255, 255, 0);
     border-radius: 15px; 
+	border-color: rgba(255, 255, 255, 0.3);
 	background-image: linear-gradient(150deg,
                                       rgba(255, 255, 222, 0) 0%,
                                       rgba(255, 255, 222, 0) 5%,
@@ -104,7 +105,6 @@ body {
 	opacity: 1;
 	background-position: 25% 25%;
 	background-size: 100% 100%;
-	border-color: rgba(255, 255, 255, 0.3);
 	transform: rotateX(5deg) rotateY(-5deg) scale(0.99);
 	backdrop-filter: brightness(1) blur(1.5px);
 }
@@ -156,7 +156,7 @@ body {
 #link_block, #setting_block {
     position: absolute;
 	margin-left: 75px;
-	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='5' ry='5' stroke='rgba(222, 222, 222, 0.3)' stroke-width='5' stroke-dasharray='12%2c 8%2c 1' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='5' ry='5' stroke='rgba(22, 22, 22, 0.3)' stroke-width='5' stroke-dasharray='12%2c 8%2c 1' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
 	border-radius: 5px;
 	/* https://kovart.github.io/dashed-border-generator/ */
 }
@@ -188,12 +188,18 @@ body {
 	width: 0px;
 	height: 0px;
 }
+/*
 #musescore:before { background-color: rgba(80, 170, 255, 0.6); }
 #youtube:before { background-color: rgba(255, 120, 120, 0.6); }
-#github:before { background-color: rgba(200, 200, 200, 0.6); }
+#github:before { background-color: rgba(170, 170, 170, 0.6); }
 #language:before { background-color: rgba(200, 200, 200, 0.4); }
 #sources:before { background-color: rgba(200, 200, 200, 0.4); }
-
+*/
+#musescore:before { background-color: rgba(33, 100, 150, 0.6); }
+#youtube:before { background-color: rgba(155, 44, 44, 0.6); }
+#github:before { background-color: rgba(88, 88, 88, 0.6); }
+#language:before { background-color: rgba(44, 44, 44, 0.3); }
+#sources:before { background-color: rgba(44, 44, 44, 0.3); }
 
 .link_icon:after, .setting_icon:after {
 	content: '';
@@ -349,7 +355,7 @@ body {
 	bottom: 35px;
 	text-align: right;
 	transform: rotateX(-10deg) rotateY(10deg);
-	animation: music_block_title_move_in 0.75s ease;
+	animation: music_block_title_move_in 0.75s cubic-bezier(.26,.8,.51,1.07);
 	transition: 0.5s;
 }
 @keyframes music_block_title_move_in {
@@ -376,7 +382,7 @@ body {
 	right: -300px;
 	bottom: -450px;
 	opacity: 0.3;
-	animation: cd_rotate 30s infinite linear, cd_move_in 0.75s ease;
+	animation: cd_rotate 30s infinite linear, cd_move_in 0.75s cubic-bezier(.26,.8,.51,1.07);
 	z-index: -10;
 	transition: 0.5s;
 }
@@ -444,29 +450,29 @@ body {
 	color: rgba(200, 200, 255, 0.9);
 }
 
-.album {
+#album {
 	width: 100%;
 	height: 100%;
 	position: absolute;
+	background-color: rgba(255, 255, 255, 0.1);
 	background-size: cover;
 	transform-style: preserve-3d;
-	display: none;
-}
-.album_active {
 	display: block;
+	background-image: url('assets/albums/classical_compositions_solo.jpg');
 }
-#album_classical_compositions_solo {
-	background-image: url('assets/ideas/5.jpg');
-}
-#album_classical_arrangements {
-	background-image: url('assets/ideas/2.jpg');
-}
-.album * {
+#album * {
 	position: absolute;
 	margin: 0px;
 	user-select: none;
+	
 }
-#album_classical_compositions_solo span {
+.album_classical_compositions_solo * {
+	font-family: 'Sofia Sans Extra Condensed';
+	text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+	text-align: right;
+	transform: translateZ(30px);
+}
+.album_classical_compositions_solo div {
 	top: 15px;
 	right: 15px;
 	width: 60px;
@@ -474,41 +480,67 @@ body {
 	background-image: url('assets/seal_two.png');
 	background-repeat: no-repeat;
 	background-size: cover;
-	transform: translateZ(30px);
 	filter: drop-shadow(0px, 0px, 5px, rgba(255, 0, 0, 0.3));
 }
-#album_classical_compositions_solo * {
-	transform: translateZ(30px);
-	text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
-}
-#album_classical_compositions_solo h1 {
+
+.album_classical_compositions_solo h1:after { content: 'Compositions'; }
+.album_classical_compositions_solo h2:after { content: 'Classical'; }
+.album_classical_compositions_solo h3:after { content: 'Soloist'; }
+
+.album_classical_compositions_solo h1 {
 	font-size: 72pt;
-	font-family: 'Sofia Sans Extra Condensed';
 	font-weight: 500;
 	color: white;
 	right: 35px;
 	bottom: 10px;
-	text-align: right;
 }
-#album_classical_compositions_solo h2 {
+.album_classical_compositions_solo h2 {
 	font-size: 48pt;
-	font-family: 'Sofia Sans Extra Condensed';
 	font-weight: 300;
 	color: white;
 	right: 215px;
 	bottom: 80px;
-	text-align: right;
 }
-#album_classical_compositions_solo h3 {
+.album_classical_compositions_solo h3 {
 	font-size: 28pt;
-	font-family: 'Sofia Sans Extra Condensed';
 	font-weight: 300;
 	color: white;
 	right: 365px;
 	bottom: 105px;
-	text-align: right;
 }
+.album_classical_arrangements h1, .album_classical_arrangements h2 {
+	background-image: url("assets/gold.jpg");
+	background-size: 350%;
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+.album_classical_arrangements h1:after { content: 'Arrangements'; }
+.album_classical_arrangements h2:after { content: 'of Classical Music'; }
+.album_classical_arrangements h3:after { content: 'Richard Yin'; }
 
+.album_classical_arrangements h1 {
+	transform: translateZ(30px);
+	color: rgba(255, 255, 200, 0.5);
+	font-family: 'Friz Quadrata No. 2 W01';
+}
+.album_classical_arrangements h2 {
+	transform: translateZ(25px);
+	font-family: 'Ysabeau Infant';
+	color: rgba(150, 150, 50, 0.5);
+	font-weight: 400;
+	font-style: italic;
+}
+.album_classical_arrangements h3 {
+	transform: translateZ(15px);
+	font-family: 'Friz Quadrata No. 2 W01';
+	color: rgba(255, 200, 150, 0.4);
+	font-weight: 400;
+}
+.album_classical_arrangements div {
+	transform: translateZ(10px);
+	background-color: rgba(0, 0, 0, 0.3);
+	z-index: -2;
+}
 
 
 #album_descriptions:before {
@@ -583,6 +615,10 @@ body {
 	user-select: none;
 	pointer-events: none;
 }
+#album_descriptions tr:nth-child(2n):after {
+	background-image: url('assets/album_hovermask_cropped_2.png');
+}
+
 #album_descriptions tr:not(:first-child):hover:after {
 	opacity: 1;
 	left: 30px;
@@ -710,6 +746,70 @@ body {
 #album_previous:hover ~ #album_number, #album_next:hover ~ #album_number {
 	transform: scale(1.03);
 }
+
+
+#music_block_album_scroll {
+	position: absolute;
+	width: 50px;
+	/*
+	width: 100%;
+	height: 25px;
+	*/
+	left: -12.5px;
+	top: 0px;
+	background-color: rgba(0, 0, 0, 0);
+	transition: 0.3s;
+	z-index: 5;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	transform-origin: top;
+	transform: rotate(-90deg) translateY(-25px);
+}
+#music_block_album_scroll:hover {
+	box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+	background-color: rgba(0, 0, 0, 0.3);
+	left: -25px;
+	top: 97.5px;
+	width: 250px;
+	transform: rotate(-90deg) translateY(-100px);
+}
+#music_block_album_scroll:hover ~ #album_block {
+	margin-top: 25px;
+}
+#music_block_album_scroll:hover ~ #music_block_title {
+	bottom: 10px;
+}
+#music_block_album_scroll:hover ~ #cd {
+	bottom: -475px;
+}
+#music_block_album_scroll span {
+	width: 200px;
+	height: 200px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	display: block;
+	transition: 0.2s;
+	opacity: 0;
+	transform: rotate(90deg);
+	margin: 7.5px;
+	border: 2.5px solid rgba(255, 255, 255, 0);
+	cursor: pointer;
+}
+#music_block_album_scroll:hover span {
+	opacity: 1;
+}
+#music_block_album_scroll span:hover {
+	filter: brightness(1.5) saturate(1.5);
+	border: 2.5px solid rgba(255, 255, 255, 0.5);
+	margin-left: 7.5px;
+	margin-bottom: 7.5px;
+}
+#music_block_album_scroll span:active {
+	filter: brightness(1.5) saturate(1.5) invert(0.2);
+	transition: 0s;
+}
+
+
 #music_block_back {
 	width: 100%;
 	height: 70px;

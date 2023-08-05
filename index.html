@@ -7,16 +7,18 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jost&family=Kreon:wght@300&family=Zilla+Slab:wght@400;500&family=Lusitana:wght@400;700&family=Goudy+Bookletter+1911&family=IM+Fell+DW+Pica:ital@0;1&family=Sofia+Sans+Extra+Condensed:wght@300;500&family=Cardo:ital,wght@0,400;0,700;1,400&family=Alata&family=Jost&family=Poltawski+Nowy:wght@600&family=Baskervville:ital@0;1&family=Ysabeau+Infant:wght@400;700&family=Fira+Sans+Condensed:wght@400&display=swap" rel="stylesheet">
+  <!-- https://www.onlinewebfonts.com/download/e3084d24cd24af3f49f46b241334057b -->
+  <link href="https://db.onlinewebfonts.com/c/e3084d24cd24af3f49f46b241334057b?family=Friz+Quadrata+No.+2+W01" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost&family=Kreon:wght@300&family=Zilla+Slab:wght@400;500&family=Lusitana:wght@400;700&family=Goudy+Bookletter+1911&family=IM+Fell+DW+Pica:ital@0;1&family=Sofia+Sans+Extra+Condensed:wght@300;500&family=Cardo:ital,wght@0,400;0,700;1,400&family=Alata&family=Jost&family=Poltawski+Nowy:wght@600&family=Baskervville:ital@0;1&family=Ysabeau+Infant:ital,wght@0,400;0,700;1,400;1,700&family=Fira+Sans+Condensed:wght@400&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/x-icon" href="assets/favicon.png">
   <link rel="stylesheet" href="index.css">
   <script src="index.js"></script>
 
-  <title>Richard Yin</title>
+  <title>Richard F. Yin</title>
 </head>
 
-<body onmousemove="handleMouseMove(event)">
+<body onmousemove="handleMouseMove(event)" onload='onHTMLLoad()'>
   <div id="container">
     <div id='room_zoom'>
       <div id="room"></div>
@@ -44,7 +46,8 @@
       <hr>
       <p>I like video games, classical music, and machine learning.</p>
       <p>And I study computer science and data science at the University of Toronto.</p>
-      <p>Website made by me. Graphics were edited but not made by me.</p>
+      <p>I go online by tirangol/trngl.</p>
+	  <p>Website coded by me.</p>
     </div>
     <div id='about_background'></div>
 
@@ -55,6 +58,17 @@
     <div id="stand"></div>
 
     <div id='music_block'>
+	  <div id='music_block_album_scroll'>
+	    <span onclick='skipToAlbum(0)'> </span>
+		<span onclick='skipToAlbum(1)'> </span>
+		<span onclick='skipToAlbum(2)'> </span>
+		<span onclick='skipToAlbum(3)'> </span>
+		<span onclick='skipToAlbum(4)'> </span>
+		<span onclick='skipToAlbum(5)'> </span>
+		<span onclick='skipToAlbum(6)'> </span>
+		<span onclick='skipToAlbum(7)'> </span>
+	  </div>
+	  
       <div id='music_block_title'>
         <h1>Music</h1>
         <p>Compositions, arrangements, recordings, and playlists.</p>
@@ -72,14 +86,11 @@
             <span>Playlist</span>
           </h1>
 
-          <div id='album_classical_compositions_solo' class='album album_active'>
-            <span> </span>
-            <h3>Soloist</h3>
-            <h2>Classical</h2>
-            <h1>Compositions</h1>
-          </div>
-          <div id='album_classical_arrangements' class='album'>
-            <span>Hewwo?</span>
+          <div id='album' class='album_classical_compositions_solo'>
+            <div></div>
+            <h3></h3>
+            <h2></h2>
+            <h1></h1>
           </div>
         </div>
 
@@ -163,7 +174,7 @@
         <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 2)" onclick="goToMenu(2)">Music</h1>
         <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 3)" onclick="goToMenu(3)">Resources</h1>
         <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 4)" onclick="goToMenu(4)">Resume</h1>
-        <canvas id="select_animation" width="350%" height="250%"></canvas>
+        <canvas id="select_animation" height='250%' width='350%'></canvas>
       </div>
     </div>
   </div>
