@@ -572,6 +572,17 @@ body {
 	transform: rotateX(-10deg) rotateY(10deg);
 	white-space: nowrap;
 }
+#album_descriptions_container {
+	width: 100%;
+	height: 70%;
+	overflow-x: hidden;
+}
+#album_descriptions_scroller {
+	width: calc(100% + 25px);
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
 #album_descriptions h2 {
 	font-size: 42pt;
 	font-family: 'IM Fell DW Pica', Brush Script MT, Georgia, Times, 'Garamond', 'Times New Roman', serif;
@@ -579,6 +590,9 @@ body {
 	font-weight: normal;
 	margin-bottom: 15px;
 	margin-top: 30px;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 #album_descriptions h2:after {
 	content: '';
@@ -593,43 +607,53 @@ body {
 	position: absolute;
 	opacity: 0.8;
 }
-#album_descriptions table {
+#album_descriptions_scroller table {
 	border-collapse: collapse;
 	table-layout: fixed;
-	width: 100%;
+	width: 95%;
 }
-#album_descriptions tr:not(:first-child):after {
+#album_descriptions_scroller tr:first-child {
+	top: 0;
+	position: sticky;
+	backdrop-filter: blur(5px);
+}
+:root {
+	--scroll_offset: 0px;
+	--scroll_transition: 0.3s;
+}
+#album_descriptions_scroller tr:not(:first-child):after {
 	content: 'a';
 	color: rgba(0, 0, 0, 0);
-	position: absolute;
 	left: 20px;
-	/* background-image: linear-gradient(to right, rgba(255, 0, 0, 0.2) 0%, rgba(255, 0, 0, 0) 100%); */
+	margin-top: var(--scroll_offset);
+	position: absolute;
+	background-image: linear-gradient(to right, rgba(255, 0, 0, 0.2) 0%, rgba(255, 0, 0, 0) 100%);
 	background-image: url('assets/album_hovermask_cropped.png');
 	background-size: 100% 100%;
 	font-size: 16pt;
 	width: 85%;
 	font-family: 'Cardo', 'Palatino', Gill Sans, Tahoma, sans-serif;	
 	opacity: 0;
-	transition: 0.3s;
+	transition: var(--scroll_transition);
 	z-index: -1;
 	user-select: none;
 	pointer-events: none;
 }
-#album_descriptions tr:nth-child(2n):after {
+#album_descriptions_scroller tr:nth-child(2n):after {
 	background-image: url('assets/album_hovermask_cropped_2.png');
 }
 
-#album_descriptions tr:not(:first-child):hover:after {
+#album_descriptions_scroller tr:not(:first-child):hover:after {
 	opacity: 1;
 	left: 30px;
 }
-#album_descriptions tr:not(:first-child) {
+#album_descriptions_scroller tr:not(:first-child) {
 	transition: 0.3s;
 }
-#album_descriptions tr:not(:first-child):hover {
+#album_descriptions_scroller tr:not(:first-child):hover {
 	color: rgba(255, 255, 255, 1);
 }
-#album_descriptions th {
+#album_descriptions_scroller th {
 	text-align: left;
 	font-weight: normal;
 	font-style: italic;
@@ -639,19 +663,19 @@ body {
 	transition: 0.5s;
 	overflow: hidden;
 }
-#album_descriptions th:nth-child(1) { width: 60%; }
-#album_descriptions th:nth-child(2) { width: 10%; }
-#album_descriptions th:nth-child(3) { width: 30%; }
-#album_descriptions th:nth-child(4) { width: 0%; }
+#album_descriptions_scroller th:nth-child(1) { width: 60%; }
+#album_descriptions_scroller th:nth-child(2) { width: 10%; }
+#album_descriptions_scroller th:nth-child(3) { width: 30%; }
+#album_descriptions_scroller th:nth-child(4) { width: 0%; }
 
-#album_descriptions td {
+#album_descriptions_scroller td {
 	font-size: 14pt;
 	font-family: 'Cardo', 'Palatino', Gill Sans, Tahoma, sans-serif;
 	overflow-x: hidden;
 	text-overflow: ellipsis;
     white-space: nowrap;
 }
-#album_descriptions td:first-child:before {
+#album_descriptions_scroller td:first-child:before {
 	content: '>>> ';
 	letter-spacing: -5px;
 	margin-left: -18pt;
@@ -660,7 +684,7 @@ body {
 	transition: 0.3s ease;
 	pointer-events: none;
 }
-#album_descriptions td:first-child:hover:before {
+#album_descriptions_scroller td:first-child:hover:before {
 	margin-left: 8px;
 	opacity: 1;
 	color: rgba(255, 255, 255, 1);
@@ -751,6 +775,7 @@ body {
 #music_block_album_scroll {
 	position: absolute;
 	width: 50px;
+	height: 100vw;
 	/*
 	width: 100%;
 	height: 25px;
@@ -798,11 +823,9 @@ body {
 #music_block_album_scroll:hover span {
 	opacity: 1;
 }
-#music_block_album_scroll span:hover {
+#music_block_album_scroll span:hover, .music_block_album_scroll_active {
 	filter: brightness(1.5) saturate(1.5);
-	border: 2.5px solid rgba(255, 255, 255, 0.5);
-	margin-left: 7.5px;
-	margin-bottom: 7.5px;
+	border: 2.5px solid rgba(255, 255, 255, 0.5) !important; /*Pritorize class over id properties*/
 }
 #music_block_album_scroll span:active {
 	filter: brightness(1.5) saturate(1.5) invert(0.2);

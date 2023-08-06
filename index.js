@@ -75,10 +75,10 @@ function rotateAlbum() {
 	cssSetId('album_section_title', 'transform', transform);
 }
 
-function findCss(queryProperty) {
+function cssFind(queryProperty) {
 	return document.querySelector(queryProperty);
 }
-function findCssAll(queryProperty) {
+function cssFindAll(queryProperty) {
 	return document.querySelectorAll(queryProperty);
 }
 
@@ -357,10 +357,10 @@ function goToOriginalMenu() {
     cssSetId('background', 'min-width', "1000px");
     cssSetId('background', 'right', "0%");*/
 	if (currScreen == 0) {
-		cssSetId('tv', 'height', '');   cssSetId('tv_body', 'height', '');  	cssSetId('tv_screen', 'height', '');
-		cssSetId('tv', 'bottom', '');   cssSetId('tv_body', 'bottom', '');  	cssSetId('tv_screen', 'bottom', '');
-		cssSetId('tv', 'right', '');   	cssSetId('tv_body', 'right', ''); 		cssSetId('tv_screen', 'right', '');
-																				cssSetId("tv_screen", 'opacity', '0');
+		cssSetId('tv', 'height', '');   cssSetId('tv_body', 'height', '');  cssSetId('tv_screen', 'height', '');
+		cssSetId('tv', 'bottom', '');   cssSetId('tv_body', 'bottom', '');  cssSetId('tv_screen', 'bottom', '');
+		cssSetId('tv', 'right', '');   	cssSetId('tv_body', 'right', ''); 	cssSetId('tv_screen', 'right', '');
+																			cssSetId("tv_screen", 'opacity', '0');
 		cssSetId('stand', 'height', '285%');
 		cssSetId('stand', 'bottom', '-333%');
 		cssSetId('stand', 'right', '-80%');
@@ -473,12 +473,9 @@ function handleScreenResize() {
 		if (!rotating)
 			updateAlbumDetails(albumHeight);
 		
-		let albumSectionTitles = findCssAll('#album_section_title span');
+		let albumSectionTitles = cssFindAll('#album_section_title span');
 		albumSectionTitles.forEach(x => x.style.setProperty('font-size', albumHeight / 35 + 'pt'));
 		cssSetClass('album_section_title_active', 'font-size', albumHeight / 30 + 'pt');
-		
-		let musicBlockAlbumScroll = cssGetId('music_block_album_scroll');
-		musicBlockAlbumScroll.style.setProperty('height', window.innerWidth + 'px');
 	} else if (currScreen == 3) {
 		
 	} else if (currScreen == 4) {
@@ -496,10 +493,10 @@ let albumDetails = [[['font-size', 7.125, 'right', 20, 'bottom', 30],	['font-siz
 					[[], [], [], []]];
 
 function updateAlbumDetails(albumHeight) {
-	let h1 = findCss('#album h1');
-	let h2 = findCss('#album h2');
-	let h3 = findCss('#album h3');
-	let seal = findCss('#album div');
+	let h1 = cssFind('#album h1');
+	let h2 = cssFind('#album h2');
+	let h3 = cssFind('#album h3');
+	let seal = cssFind('#album div');
 	
 	function removeCss(item) {
 		item.style.removeProperty('left');
@@ -625,20 +622,40 @@ function onHTMLLoad() {
 	currAlbum = parseInt(cssGetId('album_number').innerHTML.replace(/\D/g,''));
 	totalAlbums = parseInt(cssGetPseudoElement('album_number', ":after").getPropertyValue('content').replace(/\D/g,''));
 	
-	let spans = findCssAll('#music_block_album_scroll span');
+	let spans = cssFindAll('#music_block_album_scroll span');
 	for (let i = 0; i < spans.length; i++) {
 		spans[i].style.setProperty('background-image', "url('assets/albums/album_" + albumImages[i] + "')")
 	}
 }
 
+function updateAlbum() {
+	let scroller = cssGetId('album_descriptions_scroller');
+	scroller.scrollTop = 0;
+	updateAlbumNumber();
+	updateAlbumCoverAndInfo();
+	updateAlbumSectionTitle();
+	updateAlbumScrollActive();
+}
 function skipToAlbum(number) {
 	if (rotating || currAlbum == number + 1) 		return;
 	else if (currAlbum < number + 1) 	albumRotateNext = true;
 	else								albumRotateNext = false;
 	currAlbum = number + 1;
-	updateAlbumNumber();
 	updateAlbum();
-	updateAlbumSectionTitle();
+}
+function scrollAlbumDescription() {
+	let scroller = cssGetId('album_descriptions_scroller');
+	document.documentElement.style.setProperty("--scroll_transition", "0s");
+	document.documentElement.style.setProperty("--scroll_offset", (-scroller.scrollTop) + "px");
+	setTimeout(() => {
+		document.documentElement.style.setProperty("--scroll_transition", "0.3s");
+	}, 1);
+}
+function updateAlbumScrollActive() {
+	let oldActive = cssGetClass('music_block_album_scroll_active')[0];
+	let newActive = cssFindAll('#music_block_album_scroll span')[currAlbum - 1];
+	oldActive.classList.remove('music_block_album_scroll_active');
+	newActive.classList.add('music_block_album_scroll_active');
 }
 function updateAlbumSectionTitle() {
 	let oldActive = cssGetClass('album_section_title_active')[0];
@@ -647,7 +664,7 @@ function updateAlbumSectionTitle() {
 	else if (currAlbum <= 6) 	i = 1;
 	else if (currAlbum == 7)	i = 2;
 	else if (currAlbum == 8)	i = 3;
-	let newActive = findCssAll('#album_section_title span')[i];
+	let newActive = cssFindAll('#album_section_title span')[i];
 	oldActive.classList.remove('album_section_title_active');
 	newActive.classList.add('album_section_title_active');
 	handleScreenResize();
@@ -657,18 +674,14 @@ function previousAlbum() {
 	if (currAlbum == 1)		currAlbum = totalAlbums;
 	else					currAlbum -= 1;
 	albumRotateNext = false;
-	updateAlbumNumber();
 	updateAlbum();
-	updateAlbumSectionTitle();
 }
 function nextAlbum() {
 	if (rotating)	return;
 	if (currAlbum == totalAlbums)	currAlbum = 1;
 	else							currAlbum += 1;
 	albumRotateNext = true;
-	updateAlbumNumber();
 	updateAlbum();
-	updateAlbumSectionTitle();
 }
 function updateAlbumNumber() {
 	let number = (currAlbum < 10) ? '0' + currAlbum : currAlbum;
@@ -676,7 +689,7 @@ function updateAlbumNumber() {
 	albumNumber.innerHTML = number;
 }
 
-function updateAlbum() {
+function updateAlbumCoverAndInfo() {
 	let albumName = albumNames[currAlbum - 1];
 	let albumId = 'album_' + albumName.toLowerCase().replaceAll(',', '').replaceAll(' ', '_');	
 	
@@ -732,7 +745,7 @@ function findFirstDifferentIndex(from, to) {
 
 let typingSpeed = 10;
 function changeAlbumTitle(to) {
-	let titleElement = findCss('#album_descriptions h2');
+	let titleElement = cssFind('#album_descriptions h2');
 	let from = titleElement.innerHTML;
 	let startIndex = findFirstDifferentIndex(from, to);
 	let frames = [from];
@@ -826,7 +839,7 @@ function changeAlbumTable(to) {
 	let tableWidthInfo = albumColumnWidths[to];
 	let tableColumnInfo = albumColumnTitles[to];
 	let tableInfo = albumInfo[to];
-	let table = findCss('#album_descriptions table');
+	let table = cssFind('#album_descriptions table');
 	let tableBody = table.children[0];
 	
 	let headers = tableBody.children[0].children;

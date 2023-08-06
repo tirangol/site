@@ -47,7 +47,7 @@
       <p>I like video games, classical music, and machine learning.</p>
       <p>And I study computer science and data science at the University of Toronto.</p>
       <p>I go online by tirangol/trngl.</p>
-	  <p>Website coded by me.</p>
+      <p>Website coded by me.</p>
     </div>
     <div id='about_background'></div>
 
@@ -58,17 +58,17 @@
     <div id="stand"></div>
 
     <div id='music_block'>
-	  <div id='music_block_album_scroll'>
-	    <span onclick='skipToAlbum(0)'> </span>
-		<span onclick='skipToAlbum(1)'> </span>
-		<span onclick='skipToAlbum(2)'> </span>
-		<span onclick='skipToAlbum(3)'> </span>
-		<span onclick='skipToAlbum(4)'> </span>
-		<span onclick='skipToAlbum(5)'> </span>
-		<span onclick='skipToAlbum(6)'> </span>
-		<span onclick='skipToAlbum(7)'> </span>
-	  </div>
-	  
+      <div id='music_block_album_scroll'>
+        <span onclick='skipToAlbum(0)' class='music_block_album_scroll_active'> </span>
+        <span onclick='skipToAlbum(1)'> </span>
+        <span onclick='skipToAlbum(2)'> </span>
+        <span onclick='skipToAlbum(3)'> </span>
+        <span onclick='skipToAlbum(4)'> </span>
+        <span onclick='skipToAlbum(5)'> </span>
+        <span onclick='skipToAlbum(6)'> </span>
+        <span onclick='skipToAlbum(7)'> </span>
+      </div>
+
       <div id='music_block_title'>
         <h1>Music</h1>
         <p>Compositions, arrangements, recordings, and playlists.</p>
@@ -96,44 +96,48 @@
 
         <div id='album_descriptions'>
           <h2>Classical Compositions, Solo</h2>
-          <table>
-            <tr>
-              <th>Title</th>
-              <th>Year</th>
-              <th>For</th>
-              <th>Composer</th>
-            </tr>
-            <tr>
-              <td>Sonata no. 1 in E♭ Minor (Mov. 1)</td>
-              <td>2019</td>
-              <td>Piano</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Prelude no. 1 in G# Minor</td>
-              <td>2019</td>
-              <td>Piano</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Prelude no. 2 in F# Minor</td>
-              <td>2017</td>
-              <td>Piano</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Pentanote Etude no. 1</td>
-              <td>2019</td>
-              <td>Piano</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Miniature for Flute and Piano</td>
-              <td>2021</td>
-              <td>Piano, Flute</td>
-              <td>Stravinsky, Igor</td>
-            </tr>
-          </table>
+          <div id='album_descriptions_container'>
+            <div id='album_descriptions_scroller' onscroll='scrollAlbumDescription()'>
+              <table>
+                <tr>
+                  <th>Title</th>
+                  <th>Year</th>
+                  <th>For</th>
+                  <th>Composer</th>
+                </tr>
+                <tr>
+                  <td>Sonata no. 1 in E♭ Minor (Mov. 1)</td>
+                  <td>2019</td>
+                  <td>Piano</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Prelude no. 1 in G# Minor</td>
+                  <td>2019</td>
+                  <td>Piano</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Prelude no. 2 in F# Minor</td>
+                  <td>2017</td>
+                  <td>Piano</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Pentanote Etude no. 1</td>
+                  <td>2019</td>
+                  <td>Piano</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Miniature for Flute and Piano</td>
+                  <td>2021</td>
+                  <td>Piano, Flute</td>
+                  <td>Stravinsky, Igor</td>
+                </tr>
+              </table>
+            </div>
+          </div>
 
           <div id='album_previous' onclick='previousAlbum()'> </div>
           <div id='album_next' onclick='nextAlbum()'> </div>
