@@ -31,12 +31,11 @@ body {
 	box-shadow: 0px 0px 10px rgba(22, 22, 22, 0.5);
 	user-select: none;
 }
-#static1 {
-	left: 38%;
-}
-#static2 {
-	left: 50%;
-}
+#static1 { left: 24%; }
+#static2 { left: 36%; }
+#static3 { left: 48%; }
+#static4 { left: 60%; }
+
 .button:hover {
 	background-color: rgba(22, 22, 22, 0.8);
 	box-shadow: 0px 0px 15px rgba(22, 22, 22, 0.5);

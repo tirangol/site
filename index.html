@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- https://www.onlinewebfonts.com/download/e3084d24cd24af3f49f46b241334057b -->
   <link href="https://db.onlinewebfonts.com/c/e3084d24cd24af3f49f46b241334057b?family=Friz+Quadrata+No.+2+W01" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Jost&family=Kreon:wght@300&family=Zilla+Slab:wght@400;500&family=Lusitana:wght@400;700&family=Goudy+Bookletter+1911&family=IM+Fell+DW+Pica:ital@0;1&family=Sofia+Sans+Extra+Condensed:wght@300;500&family=Cardo:ital,wght@0,400;0,700;1,400&family=Alata&family=Jost&family=Poltawski+Nowy:wght@600&family=Baskervville:ital@0;1&family=Ysabeau+Infant:ital,wght@0,400;0,700;1,400;1,700&family=Fira+Sans+Condensed:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost&family=Flamenco&family=Kreon:wght@300&family=Lexend:wght@300&family=Zilla+Slab:wght@400;500&family=Lusitana:wght@400;700&family=IM+Fell+DW+Pica:ital@0;1&family=Sofia+Sans+Extra+Condensed:wght@300;500&family=Cardo:ital,wght@0,400;0,700;1,400&family=Alata&family=Jost&family=Poltawski+Nowy:wght@600&family=Ysabeau+Infant:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/x-icon" href="assets/favicon.png">
   <link rel="stylesheet" href="index.css">
@@ -25,28 +25,43 @@
     </div>
 
     <div id="link_block">
-      <a href="https://musescore.com/trngl" target="_blank">
-        <div class="link_icon" id="musescore"><span>Musescore</span></div>
-      </a>
-      <a href="https://github.com/tirangol" target="_blank">
-        <div class="link_icon" id="github"><span>Github</span></div>
-      </a>
-      <a href="https://www.youtube.com/@tirangol" target="_blank">
-        <div class="link_icon" id="youtube"><span>Youtube</span></div>
-      </a>
+      <a href="https://musescore.com/trngl" target="_blank"><div class="link_icon" id="musescore"><span>Musescore</span></div></a>
+      <a href="https://github.com/tirangol" target="_blank"><div class="link_icon" id="github"><span>Github</span></div></a>
+      <a href="https://www.youtube.com/@tirangol" target="_blank"><div class="link_icon" id="youtube"><span>Youtube</span></div></a>
     </div>
-
     <div id="setting_block">
-      <div class="setting_icon" id="language"><span>Language</span></div>
-      <div class="setting_icon" id="sources"><span>Sources</span></div>
+      <div class="setting_icon" id="language" onclick='language()'><span>Language</span></div> <!-- Old map papers thrown on left half -->
+      <div class="setting_icon" id="sources" onclick='sources()'><span>Sources</span></div> <!-- Newspapers thrown on left half -->
+	  <!--
+	  https://news.google.com/newspapers?hl=en
+	  https://earth.google.com/web/data=CiQSIhIgY2NjOGJhYWVhYjg5MTFlODg4N2U3MWQ2MDFiMTRkNzU
+	  -->
     </div>
-
+	
+	<div id='about_submenu_quitter' onclick='aboutSubmenuBack()'></div>
+	<div id='about_submenu'>
+	  <div id='sources_block'>
+		<h3>Sources</h3>
+		<p>Something</p>
+	  </div>
+	  <div class='paper' id='paper1'>
+		<h3 class='language_select language_select_active' onclick='english()'>English</h3>
+		<h3 class='language_select' onclick='french()'>Français</h3>
+		<h3 class='language_select' onclick='chinese()'>中文</h3>
+	  </div>
+	  <div class='paper' id='paper2'></div>
+	  <div class='paper' id='paper3'></div>
+	  <div class='paper' id='paper4'></div>
+	  <div class='paper' id='paper5'></div>
+	  <div class='paper' id='papercover'></div>
+	</div>
+	
     <div id="about">
       <h1>About</h1>
       <hr>
       <p>I like video games, classical music, and machine learning.</p>
       <p>And I study computer science and data science at the University of Toronto.</p>
-      <p>I go online by tirangol/trngl.</p>
+      <p>I go by tirangol/trngl online.</p>
       <p>Website coded by me.</p>
     </div>
     <div id='about_background'></div>
@@ -97,6 +112,7 @@
         <div id='album_descriptions'>
           <h2>Classical Compositions, Solo</h2>
           <div id='album_descriptions_container'>
+		    <div id='album_descriptions_scroll_button' onmousedown='skipScroll()'><div></div></div>
             <div id='album_descriptions_scroller' onscroll='scrollAlbumDescription()'>
               <table>
                 <tr>
@@ -173,11 +189,11 @@
       </div>
 
       <div id="menu_block">
-        <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 0)" onclick="goToMenu(0)">About</h1>
-        <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 1)" onclick="goToMenu(1)">Projects</h1>
-        <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 2)" onclick="goToMenu(2)">Music</h1>
-        <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 3)" onclick="goToMenu(3)">Resources</h1>
-        <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 4)" onclick="goToMenu(4)">Resume</h1>
+        <h1 onmouseenter="enterSelect(0)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 0)" onclick="goToMenu(0)">About</h1> <!-- Zoom out to TV -->
+        <h1 onmouseenter="enterSelect(1)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 1)" onclick="goToMenu(1)">Projects</h1> <!-- Glitchy alternate reality -->
+        <h1 onmouseenter="enterSelect(2)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 2)" onclick="goToMenu(2)">Music</h1> <!-- Zoom up -->
+        <h1 onmouseenter="enterSelect(3)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 3)" onclick="goToMenu(3)">Resources</h1> <!-- Fire burning from right to left -->
+        <h1 onmouseenter="enterSelect(4)" onmouseleave="leaveSelect()" onmousedown="selectMenu(event, 4)" onclick="goToMenu(4)">Resume</h1> <!-- Zoom in slightly, rotate, off to side -->
         <canvas id="select_animation" height='250%' width='350%'></canvas>
       </div>
     </div>

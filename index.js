@@ -14,6 +14,7 @@ function handleMouseMove(event) {
 		scaleMainMenuBackground();
 	} else if (currScreen == 2) {
 		rotateAlbum();
+		scrollDrag();
 	}
 }
 
@@ -351,11 +352,6 @@ function goToMenu(i) {
 }
 
 function goToOriginalMenu() {
-	/*
-	cssSetId('background', 'width', "100%");
-    cssSetId('background', 'height', "100%");
-    cssSetId('background', 'min-width', "1000px");
-    cssSetId('background', 'right', "0%");*/
 	if (currScreen == 0) {
 		cssSetId('tv', 'height', '');   cssSetId('tv_body', 'height', '');  cssSetId('tv_screen', 'height', '');
 		cssSetId('tv', 'bottom', '');   cssSetId('tv_body', 'bottom', '');  cssSetId('tv_screen', 'bottom', '');
@@ -364,7 +360,7 @@ function goToOriginalMenu() {
 		cssSetId('stand', 'height', '285%');
 		cssSetId('stand', 'bottom', '-333%');
 		cssSetId('stand', 'right', '-80%');
-		cssSetId('room_zoom', 'transform', 'scale(2) translate(10%)');
+		cssSetId('room_zoom', 'transform', 'scale(3) translate(10%)');
 		
 		cssSetId('background', 'width', '100%');
 		cssSetId('background', 'height', '100%');
@@ -372,7 +368,6 @@ function goToOriginalMenu() {
 		cssSetId('background', 'right', '0px');
 		cssSetId('background', 'bottom', '0px');
 		cssSetId('background', 'transform', 'scale(1)');
-		cssSetId('background', 'transition', '0.5s');
 		cssSetId('music_block', 'display', 'none');
 		
 		setTimeout(() => {
@@ -393,7 +388,6 @@ function goToOriginalMenu() {
 		cssSetId('album_block', 'top', '-100%');
 		
 		cssSetId('c5', 'display', 'block');
-		cssSetId('c5', 'transition', '0s');
 		cssSetId('c5', 'filter', 'opacity(1)');
 		
 		cssSetId('c13', 'transition', '0s');
@@ -403,7 +397,6 @@ function goToOriginalMenu() {
 			cssSetId('music_block', 'display', 'none');
 			cssSetId('music_block_back', 'display', 'none');
 			cssSetId('music_block_album_scroll', 'display', 'none');
-			cssSetId('c13', 'transition', '0s');
 			
 			cssSetId('music_block_title', 'right', '75px');
 			cssSetId('cd', 'right', '-300px');
@@ -416,6 +409,7 @@ function goToOriginalMenu() {
 	scaleMainMenuBackground()
 }
 
+let aboutMenuTransitioning = false;
 function goToAboutMenu() {
 	cssSetId('tv', 'height', '65%');    cssSetId('tv_body', 'height', '65%');   cssSetId('tv_screen', 'height', '65%');
 	cssSetId('tv', 'bottom', '27%');    cssSetId('tv_body', 'bottom', '27%');   cssSetId('tv_screen', 'bottom', '27%');
@@ -431,6 +425,20 @@ function goToAboutMenu() {
 	cssSetId('background', 'overflow', 'hidden');
 	cssSetId('c15', 'display', 'none');
 	cssSetId('music_block', 'display', 'none');
+	
+	cssSetId('background', 'min-width', "1px");
+	cssSetId('background', 'width', "calc(1.4 * max(100vh, 600px))");
+	cssSetId('background', 'height', "calc(1.05 * max(100vh, 600px))");
+	cssSetId('background', 'right', "calc(min(-12.72vh, -76.36px) + 30px)");
+	cssSetId('background', 'bottom', "min(-1.05vh, -6.3px)");
+	
+	aboutMenuTransitioning = true;
+	for (let i = 1; i <= 11; i++) {
+		setTimeout(() => {
+			handleScreenResize();
+			if (i == 11) aboutMenuTransitioning = false;
+		}, 50 * i);
+	}
 }
 
 function cssGetClass(className) {
@@ -443,39 +451,49 @@ function cssSetClass(className, property, value) {
 	}
 }
 
+
 function handleScreenResize() {
 	let windowWidth = Math.max(window.innerWidth, 1000);
 	let windowHeight = Math.max(window.innerHeight, 600);
     
-	if (currScreen == 0) {	
-		cssSetId('about', 'width', 'calc(100% - ' + (0.65 * windowHeight + 500) + "px)");
-		cssSetId('about_background', 'width', 'calc(100% - ' + (0.65 * windowHeight + 500) + "px)");
-        // cssSetId('about', 'width', (windowWidth - 1.5 * tvWidth - 75) + "px");
+	if (currScreen == 0) {
+		if (aboutMenuTransitioning) return;
 		
-		let width = windowHeight * 1.4;
-        let height = windowHeight * 1.05;
-        let right = -width / 11 + 30;
-        let bottom = height * -0.01;
-		cssSetId('background', 'width', width + "px");
-        cssSetId('background', 'height', height + "px");
-        cssSetId('background', 'min-width', "1px");
-        cssSetId('background', 'right', right + "px");
-        cssSetId('background', 'bottom', bottom + "px");
+		let stand = cssGetId('stand');
+		cssSetId("about", "width", 'calc(100% - ' + (stand.offsetWidth + 375) + 'px');
+		cssSetId("about_background", "width", 'calc(100% - ' + (stand.offsetWidth + 375) + 'px');
+		cssSetId("about_submenu", "width", 'calc(100% - ' + (stand.offsetWidth + 270) + 'px');
 		
-		setTimeout(() => {cssSetId('background', 'transition', '0s');}, 750);
-    } else if (currScreen == 1) {
+		let aboutSubmenuWidth = cssGetId('about_submenu').offsetWidth;
+		if (currAboutSubmenu == 'sources') {
+			paper1.classList.remove('paper_hoverable');
+			paper1.style.setProperty('left', 'max(0px, calc(100% * 0.5 - 186px))');
+			cssSetId('sources_block', 'display', 'block');
+		} else {
+			paper1.classList.add('paper_hoverable');
+			let paper1Width = Math.min(aboutSubmenuWidth, Math.max(0.6 * windowHeight * 0.9, 0.6 * aboutSubmenuWidth));
+			paper1.style.setProperty('width', paper1Width + 'px');
+			paper1.style.setProperty('left', 'calc((100% - ' + (paper1Width) + 'px) / 2)');
+			paper1.style.setProperty('top', 'calc((100% - ' + (paper1Width / 0.9) + 'px) / 2)');
+			cssSetId('sources_block', 'display', 'none');
+			
+			document.documentElement.style.setProperty("--language_select_font_size", (paper1Width / 6.9) + 'px');
+		}
+	} else if (currScreen == 1) {
 		
 	} else if (currScreen == 2) {
 		let albumHeight = Math.min(700, windowHeight * 0.8 - 300 * windowHeight / windowWidth + 100);
 		cssSetId('album_holder', 'height', albumHeight + "px");
 		cssSetId('album_holder', 'top', 0.6 * (windowHeight - albumHeight) + "px");
-		cssSetId('album_descriptions', 'width', 'calc(100% - 245px - ' + albumHeight + 'px)');
+		cssSetId('album_descriptions', 'width', 'calc(100% - ' + (245 + albumHeight) + 'px)');
 		if (!rotating)
-			updateAlbumDetails(albumHeight);
+			updateAlbumCoverDetails(albumHeight);
 		
 		let albumSectionTitles = cssFindAll('#album_section_title span');
 		albumSectionTitles.forEach(x => x.style.setProperty('font-size', albumHeight / 35 + 'pt'));
 		cssSetClass('album_section_title_active', 'font-size', albumHeight / 30 + 'pt');
+		
+		scrollAlbumDescription();
 	} else if (currScreen == 3) {
 		
 	} else if (currScreen == 4) {
@@ -483,16 +501,16 @@ function handleScreenResize() {
 	}
 }
 
-let albumDetails = [[['font-size', 7.125, 'right', 20, 'bottom', 30],	['font-size', 10.6875, 'right', 3.3, 'bottom', 7.5],	['font-size', 18.3225, 'right', 1.9, 'bottom', 5.9],	['top', 20, 'right', 20, 'width', 15, 'height', 7.5]],
-					[['font-size', 10, 'right', 20, 'top', 11.3],		['font-size', 18, 'right', 3.9, 'top', 5.7],			['font-size', 30, 'right', 20, 'top', 25],				['left', 3.1, 'top', 12, 'width', 1.49, 'height', 5.5]],
-					[[], [], [], []],
-					[[], [], [], []],
-					[[], [], [], []],
-					[[], [], [], []],
-					[[], [], [], []],
-					[[], [], [], []]];
+let albumCoverDetails = [[['font-size', 7.125, 'right', 20, 'bottom', 30],	['font-size', 10.6875, 'right', 3.3, 'bottom', 7.5],	['font-size', 18.3225, 'right', 1.9, 'bottom', 5.9],	['top', 20, 'right', 20, 'width', 15, 'height', 7.5]],
+						[['font-size', 10, 'right', 20, 'top', 11.3],		['font-size', 18, 'right', 3.9, 'top', 5.7],			['font-size', 30, 'right', 20, 'top', 25],				['left', 3.1, 'top', 12, 'width', 1.49, 'height', 5.5]],
+						[[], [], [], []],
+						[[], [], [], []],
+						[[], [], [], []],
+						[[], [], [], []],
+						[[], [], [], []],
+						[[], [], [], []]];
 
-function updateAlbumDetails(albumHeight) {
+function updateAlbumCoverDetails(albumHeight) {
 	let h1 = cssFind('#album h1');
 	let h2 = cssFind('#album h2');
 	let h3 = cssFind('#album h3');
@@ -511,28 +529,11 @@ function updateAlbumDetails(albumHeight) {
 	removeCss(h3);
 	removeCss(seal);
 	
-	let albumDetail = albumDetails[currAlbum - 1];
+	let albumDetail = albumCoverDetails[currAlbum - 1];
 	for (let i = 0; i < albumDetail[0].length; i += 2) { h1.style.setProperty(albumDetail[0][i], (albumHeight / albumDetail[0][i + 1]) + 'px'); }
 	for (let i = 0; i < albumDetail[1].length; i += 2) { h2.style.setProperty(albumDetail[1][i], (albumHeight / albumDetail[1][i + 1]) + 'px'); }
 	for (let i = 0; i < albumDetail[2].length; i += 2) { h3.style.setProperty(albumDetail[2][i], (albumHeight / albumDetail[2][i + 1]) + 'px'); }
 	for (let i = 0; i < albumDetail[3].length; i += 2) { seal.style.setProperty(albumDetail[3][i], (albumHeight / albumDetail[3][i + 1]) + 'px'); }
-	
-	/*
-	h1.style.setProperty('font-size', (albumHeight / 9.5) + "pt");
-	h2.style.setProperty('font-size', (albumHeight / 14.25) + 'pt');
-	h3.style.setProperty('font-size', (albumHeight / 24.43) + 'pt');
-	h1.style.setProperty('right', (albumHeight / 20) + "px");
-	h1.style.setProperty('bottom', (albumHeight / 30) + "px");
-	h2.style.setProperty('right', (albumHeight / 3.3) + "px");
-	h2.style.setProperty('bottom', (albumHeight / 7.5) + "px");
-	h3.style.setProperty('right', (albumHeight / 1.9) + "px");
-	h3.style.setProperty('bottom', (albumHeight / 5.9) + "px");
-	
-	seal.style.setProperty('top', (albumHeight / 20) + 'px');
-	seal.style.setProperty('right', (albumHeight / 20) + 'px');
-	seal.style.setProperty('width', (albumHeight / 15) + 'px');
-	seal.style.setProperty('height', (albumHeight / 7.5) + 'px');
-	*/
 }
 
 function goToProjectsMenu() {
@@ -554,6 +555,7 @@ function goToMusicMenu() {
 		cssSetId('music_block_album_scroll', 'display', 'block');
 	}, 500);
 	setTimeout(() => {
+		cssSetId('c5', 'transition', '0s');
 		cssSetId('c5', 'display', 'none');
 	}, 600);
 	
@@ -596,17 +598,99 @@ document.onkeydown = checkKey;
 function checkKey(e) {
 	e = e || window.event;
 	
-	if (e.keyCode == 27)
-		goToMenu(-1)
-	else if (currScreen == 2) {
-		if (e.keyCode == 37)
+	if (e.keyCode == 27) { // escape
+		if (currScreen == 0 && inAboutSubmenu)
+			aboutSubmenuBack()
+		else
+			goToMenu(-1)
+	} else if (currScreen == 2) {
+		if (e.keyCode == 37) // left
 			previousAlbum();
-		else if (e.keyCode == 39)
+		else if (e.keyCode == 39) // right
 			nextAlbum();
 	}
 }
 
+let sourcesData = [['top', '30%',		'transform', 'translateZ(0px) rotateZ(-2deg)'],
+					['top', '-2%',		'transform', 'translateZ(0px) rotateZ(-1.5deg)'],
+					['bottom', '-2%',	'transform', 'translateZ(0px) rotateZ(1deg)'],
+					['bottom', '-2%',	'transform', 'translateZ(0px) rotateZ(0.5deg)'],
+					['top', '-2%',		'transform', 'translateZ(0px) rotateZ(1.5deg)'],
+					['bottom', '0%',	'transform', 'translateZ(0px)']];
+let languageData = [['top', '20%',		'transform', 'translateZ(0px)'],
+					['top', '0%',		'transform', 'translateZ(0px)'],
+					['bottom', '0%',	'transform', 'translateZ(0px)'],
+					['bottom', '0%',	'transform', 'translateZ(0px)'],
+					['top', '0%',		'transform', 'translateZ(0px)'],
+					['bottom', '0%',	'transform', 'translateZ(0px)']];
 
+let inAboutSubmenu = false;
+let currAboutSubmenu = 'language';
+function sources() {
+	cssSetClass('language_select', 'display', 'none');
+	currAboutSubmenu = 'sources';
+	aboutSubmenuOn(sourcesData);
+}
+function language() {
+	cssSetClass('language_select', 'display', 'block');
+	currAboutSubmenu = 'language';
+	aboutSubmenuOn(languageData);
+}
+function aboutSubmenuOn(data) {
+	if (currScreen != 0) return;
+	inAboutSubmenu = true;
+	cssSetId('about_submenu_quitter', 'display', 'block');
+	cssSetId('about_submenu', 'display', 'block');
+	
+	let papers = cssGetClass('paper');
+	for (let i = 0; i < papers.length; i++) {
+		papers[i].classList.remove((currAboutSubmenu == 'language') ? 'map' + (i + 1) : 'newspaper' + (i + 1));
+		papers[i].classList.add((currAboutSubmenu == 'language') ? 'newspaper' + (i + 1) : 'map' + (i + 1));
+	}
+	handleScreenResize();	
+	
+	setTimeout(() => {
+		cssSetId('about_submenu_quitter', 'opacity', '1');
+		for (let i = 0; i < papers.length; i++) {
+			setTimeout(() => {
+				papers[i].style.setProperty(data[i][0], data[i][1])
+				papers[i].style.setProperty(data[i][2], data[i][3])
+			}, Math.random() * 50);
+		}
+	}, 50);
+}
+function english() {
+	changeLanguage(cssGetClass('language_select')[0]);
+}
+function french() {
+	changeLanguage(cssGetClass('language_select')[1]);
+}
+function chinese() {
+	changeLanguage(cssGetClass('language_select')[2]);
+}
+function changeLanguage(language) {
+	let currLanguage = cssGetClass('language_select_active')[0];
+	currLanguage.classList.remove('language_select_active')
+	language.classList.add('language_select_active');
+}
+function aboutSubmenuBack() {
+	cssSetId('about_submenu_quitter', 'opacity', '0');
+	
+	let papers = cssGetClass('paper');
+	for (let i = 0; i < papers.length; i++) {
+		papers[i].style.setProperty(languageData[i][0], (i == 5) ? '-500%' : '-100%');
+		papers[i].style.setProperty('transform', 'translateZ(100px) rotateZ(0deg)')
+	}
+	setTimeout(() => {
+		cssSetId('about_submenu_quitter', 'display', 'none');
+		for (let i = 0; i < papers.length; i++) {
+			papers[i].classList.remove('map' + (i + 1));
+			papers[i].classList.remove('newspaper' + (i + 1));
+			cssSetId('about_submenu', 'display', 'none');
+		}
+		inAboutSubmenu = false;
+	}, 500);	
+}
 
 /********************************************************
  Music Menu
@@ -629,8 +713,6 @@ function onHTMLLoad() {
 }
 
 function updateAlbum() {
-	let scroller = cssGetId('album_descriptions_scroller');
-	scroller.scrollTop = 0;
 	updateAlbumNumber();
 	updateAlbumCoverAndInfo();
 	updateAlbumSectionTitle();
@@ -643,12 +725,40 @@ function skipToAlbum(number) {
 	currAlbum = number + 1;
 	updateAlbum();
 }
+
+function skipScroll() {
+	let scroller = cssGetId('album_descriptions_scroller');
+	let y = scroller.getBoundingClientRect().top;
+	let scrollPixels = Math.min(scroller.offsetHeight, Math.max(0, cursorY - y));
+	let scrollAmount = scrollPixels / scroller.offsetHeight * (scroller.scrollHeight - scroller.offsetHeight);
+	scroller.scrollTop = scrollAmount;
+}
+function scrollDrag() {
+	let scrollBar = cssGetId('album_descriptions_scroll_button');
+	if (window.getComputedStyle(scrollBar).getPropertyValue('cursor') != 'default') return;
+	skipScroll();
+}
+
 function scrollAlbumDescription() {
 	let scroller = cssGetId('album_descriptions_scroller');
 	document.documentElement.style.setProperty("--scroll_transition", "0s");
 	document.documentElement.style.setProperty("--scroll_offset", (-scroller.scrollTop) + "px");
+	
+	// Scroll the button
+	let scrollProgress = scroller.scrollTop / (scroller.scrollHeight - scroller.offsetHeight);
+	let scrollButton = cssFind('#album_descriptions_scroll_button div');
+	scrollButton.style.setProperty('top', 'calc(' + (100 * scrollProgress) + '% - ' + (scrollProgress * 100) + 'px)');
+	
+	// Opacity/size changes if there is overflow
 	setTimeout(() => {
 		document.documentElement.style.setProperty("--scroll_transition", "0.3s");
+		
+		let overflow = scroller.scrollHeight != Math.max(scroller.offsetHeight, scroller.clientHeight);
+		scrollButton.style.setProperty('height', overflow ? '100px' : '0px');
+		
+		let scrollBar = cssGetId('album_descriptions_scroll_button');
+		scrollBar.style.setProperty('opacity', overflow ? '1' : '0');
+		scrollBar.style.setProperty('height', overflow ? '55.5%' : '0%');
 	}, 1);
 }
 function updateAlbumScrollActive() {
@@ -726,7 +836,7 @@ function displayAlbum(albumId) {
 				album.style.setProperty('background-image', "url('assets/albums/" + albumImages[currAlbum - 1] + "')");
 				album.classList.remove(album.classList[0]);
 				album.classList.add(albumId);
-				updateAlbumDetails(albumHeight);
+				updateAlbumCoverDetails(albumHeight);
 			}
 			if (i == albumDisplayFrames)
 				rotating = false;
@@ -817,12 +927,12 @@ let albumInfo = {
 };
 let albumColumnWidths = {
 	album_classical_compositions_solo:	[60, 10, 30, 0],
-	album_classical_arrangements:		[50, 8, 17, 25],
+	album_classical_arrangements:		[47, 8, 17, 28],
 	album_xenoblade_chronicles_ost:		[60, 10, 30, 0],
 	album_fire_emblem_ost:				[60, 10, 30, 0],
 	album_the_great_ace_attorney_ost:	[60, 10, 30, 0],
 	album_video_game_osts_other:		[42, 8, 15, 35],
-	album_anime_osts:					[40, 8, 10, 42],
+	album_anime_osts:					[42, 8, 8, 42],
 	album_other:						[50, 8, 17, 25]
 };
 let albumColumnTitles = {
@@ -832,7 +942,7 @@ let albumColumnTitles = {
 	album_fire_emblem_ost:				['Title', 'Year', 'For', ''],
 	album_the_great_ace_attorney_ost:	['Title', 'Year', 'For', ''],
 	album_video_game_osts_other:		['Title', 'Year', 'For', 'Video Game'],
-	album_anime_osts:					['Title', 'Year', 'For', 'Anime'],
+	album_anime_osts:					['Title', 'Year', 'Type', 'Anime'],
 	album_other:						['Title', 'Year', 'For', 'Composer']
 };
 function changeAlbumTable(to) {
@@ -865,10 +975,12 @@ function changeAlbumTable(to) {
 			}
 		}, i * typingSpeed * 4);
 	}
+	
 	setTimeout(() => {
 		while (tableBody.children.length - 1 > tableInfo.length) {
 			table.deleteRow(tableBody.children.length - 1);
 		}
+		scrollAlbumDescription()
 	}, numFrames * typingSpeed * 4);
 }
 function getAlbumTableFrames(rows, tableInfo, numFrames, tableColumnInfo) {
