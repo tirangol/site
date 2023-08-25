@@ -1,4 +1,88 @@
 /********************************************************
+ Helper Functions
+ ********************************************************/
+function cssSetToValues(element, propertyValueList) {
+	if (propertyValueList.length % 2 != 0) throw "Error in cssSetToValues: " + propertyValueList + " must have an even-numbered length";
+	for (let i = 0; i < propertyValueList.length; i += 2) {
+		element.style.setProperty(propertyValueList[i], propertyValueList[i + 1]);
+	}
+}
+function cssGetId(id) {
+	return document.getElementById(id);
+}
+function cssSetId(id, property, value) {
+    cssGetId(id).style.setProperty(property, value);
+}
+function cssSetIdToValues(id, propertyValueList) {
+	let element = cssGetId(id);
+	cssSetToValues(element, propertyValueList);
+}
+function cssGetClass(className) {
+	return document.getElementsByClassName(className);
+}
+function cssSetClass(className, property, value) {
+	let elements = cssGetClass(className)
+	for (let element of elements) {
+		element.style.setProperty(property, value);
+	}
+}
+function cssSetClassToValues(className, propertyValueList) {
+	let elements = cssGetClass(className);
+	for (let element of elements.length) {
+		cssSetToValues(element, propertyValueList);
+	}
+	
+}
+function cssFind(queryProperty) {
+	return document.querySelector(queryProperty);
+}
+function cssFindAll(queryProperty) {
+	return document.querySelectorAll(queryProperty);
+}
+function cssSetAll(queryProperty, property, value) {
+	let elements = cssFindAll(queryProperty);
+	for (let element of elements) {
+		element.style.setProperty(property, value);
+	}
+}
+function cssSetAllMany(queryProperty, propertyValueList) {
+	let elements = cssFindAll(queryProperty);
+	for (let element of elements) {
+		cssSetToValues(element, propertyValueList);
+	}
+}
+
+function randomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function bound(value, min, max) {
+	if (min > max) throw "Error in bound: " + min + " > " + max;
+	return Math.min(Math.max(value, min), max);
+}
+
+window.addEventListener('resize', handleScreenResize);
+
+/********************************************************
+ Handling Keyboard Presses
+ ********************************************************/
+document.onkeydown = checkKey;
+function checkKey(e) {
+	e = e || window.event;
+	
+	if (e.keyCode == 27) { // escape
+		if (currScreen == 0 && inAboutSubmenu)
+			aboutSubmenuBack()
+		else
+			goToMenu(-1)
+	} else if (currScreen == 2) {
+		if (e.keyCode == 37) // left
+			previousAlbum();
+		else if (e.keyCode == 39) // right
+			nextAlbum();
+	}
+}
+
+/********************************************************
  Background Zoom
  ********************************************************/
 let zoomFactor = 0.05;
@@ -18,14 +102,8 @@ function handleMouseMove(event) {
 	}
 }
 
-function cssGetId(id) {
-	return document.getElementById(id);
-}
 
-function cssSetId(id, property, value) {
-    cssGetId(id).style.setProperty(property, value);
-}
-
+// Scales/moves main menu background buildings based on cursor position
 function scaleMainMenuBackground() {
     let zoom1 = zoomFactor * (screen.width - cursorX) / screen.width;
 	let zoom2 = 1200 * zoomFactor * cursorY / screen.height;
@@ -52,10 +130,12 @@ function scaleMainMenuBackground() {
     }
 }
 
-let rotating = false;
+let albumIsFlipping = false;
 let rotateFactor = 0.01;
 let rotateDiffX;
 let rotateDiffY;
+
+// Rotates the album cover image to face the cursor's direction
 function rotateAlbum() {	
 	let album = cssGetId('album');
 	/**
@@ -65,28 +145,16 @@ function rotateAlbum() {
 	**/
 	let albumX = 0.5 * (150 + 500);
 	let albumY = 0.5 * (0.2 * screen.height + 500);
-	rotateDiffY = Math.min(Math.max(-rotateFactor * (cursorX - albumX), -10), 10);
-	rotateDiffX = Math.min(Math.max(rotateFactor * (cursorY - albumY), -10), 10);
+	rotateDiffY = bound(-rotateFactor * (cursorX - albumX), min=-10, max=10);
+	rotateDiffX = bound(rotateFactor * (cursorY - albumY), min=-10, max=10);
 	
-	if (rotating)	return;
+	if (albumIsFlipping)	return;
 	
 	let transform = 'rotateX(' + rotateDiffX + 'deg) rotateY(' + rotateDiffY + 'deg)';
 	album.style.setProperty('transform', transform);
-	cssSetId('album_section_title', 'transform-origin', albumX + 'px ' + albumY + 'px');
-	cssSetId('album_section_title', 'transform', transform);
+	cssSetIdToValues('album_section_title', ['transform-origin', albumX + 'px ' + albumY + 'px',
+										'transform', transform])
 }
-
-function cssFind(queryProperty) {
-	return document.querySelector(queryProperty);
-}
-function cssFindAll(queryProperty) {
-	return document.querySelectorAll(queryProperty);
-}
-
-/********************************************************
- Background Resizing
- ********************************************************/
-window.addEventListener('resize', handleScreenResize);
 
 
 /********************************************************
@@ -100,25 +168,26 @@ const p5 = new Image(); p5.src = "assets/particles/p5.png";
 const p6 = new Image(); p6.src = "assets/particles/p6.png";
 const p7 = new Image(); p7.src = "assets/particles/p7.png";
 
-let particleScale = [0.08, 0.15, 0.2, 0.04, 0.1, 0.2, 0.1];
-let particleXOffset = [15, 10, -18, 25, 30, 10, 5];
-let particleYOffset = [6, 5, 12, 15, 16, 8, 10];
+const particleScale = [0.08, 0.15, 0.2, 0.04, 0.1, 0.2, 0.1];
+const particleXOffset = [15, 10, -18, 25, 30, 10, 5];
+const particleYOffset = [6, 5, 12, 15, 16, 8, 10];
 
+function getParticleScale(p) { return readParticleList(particleScale, p); }
+function getParticleXOffset(p) { return readParticleList(particleXOffset, p); }
+function getParticleYOffset(p) { return readParticleList(particleYOffset, p); }
 function readParticleList(lst, p) {
     let i = p.src[p.src.length - 5];
     return lst[parseInt(i) - 1];
 }
-function getParticleScale(p) {
-    return readParticleList(particleScale, p);
-}
-function getParticleXOffset(p) {
-    return readParticleList(particleXOffset, p);
-}
-function getParticleYOffset(p) {
-    return readParticleList(particleYOffset, p);
-}
-function drawImage(context, image, x, y, scale, opacity) {
-    if (opacity <= 0)
+
+function drawImage(context, pInfo) {
+	let image = pInfo.get('image');
+	let x = pInfo.get('currX');
+	let y = pInfo.get('currY');
+	let scale = pInfo.get('currScale');
+	let opacity = pInfo.get('currOpacity');
+	
+	if (opacity <= 0)
         return;
 	
     context.globalCompositeOperation = "lighter";
@@ -132,15 +201,52 @@ function drawImage(context, image, x, y, scale, opacity) {
 
 
 /********************************************************
- HTML Menu Select Canvas Animation
+ Menu Select Canvas Animation
  ********************************************************/
+const fps = 60;
+const maxIterations = 70;
+let pauseAnimation = true; // Stop generating particles?
+let doneAnimation = true;  // Have all particles finished their iteration?
+
+let currSelectedMenu = 0;	// Currently selected menu ID
+let prevSelectedMenu = 0;	// Previously selected menu ID
+function menuDiff() { return currSelectedMenu - prevSelectedMenu; }
+
+// Particle start/end information
+let defaultStartX = 250;
+let defaultStartY = 15;
+let defaultEndX = 50;
+let defaultEndY = 15;
+const endXPositions = [60, 30, 60, 0, 30];
+
+function enterSelect(i) {
+    prevSelectedMenu = currSelectedMenu;
+    currSelectedMenu = i;
+
+    defaultStartY += menuDiff() * 42;
+    defaultEndY += menuDiff() * 42;
+    defaultEndX = endXPositions[i];
+	
+	// Bugfix
+	defaultStartY = bound(defaultStartY, 0, 42 * 5);
+	defaultEndY = bound(defaultStartY, 0, 42 * 5);
+    
+    pauseAnimation = false;
+    if (doneAnimation) {
+		doneAnimation = false;
+        window.requestAnimationFrame(updateSelectAnimation);
+    }
+}
+function leaveSelect() {
+    pauseAnimation = true;
+}
+
 function updateSelectAnimation() {
     let canvas = cssGetId("select_animation");
     let context = canvas.getContext("2d");
     
     context.clearRect(0, 0, canvas.width, canvas.height);
     drawParticles(context);
-    menuDiff = 0;
 
     if (!doneAnimation) {
         setTimeout(() => {
@@ -149,57 +255,21 @@ function updateSelectAnimation() {
     }
 }
 
-// Particle start/end information
-let defaultStartX = 250;
-let defaultStartY = 15;
-let defaultEndX = 50;
-let defaultEndY = 15;
-let endXPositions = [60, 30, 60, 0, 30];
-
-let fps = 60;
-let maxIterations = 33;
-let pauseAnimation = true; // Stop generating particles?
-let doneAnimation = true;  // Have all particles finished their iteration?
-
-let currSelect = 0; // Selected menu ID
-let menuDiff = 0;       // Difference in current selected menu ID from previous selected menu ID
-
-function enterSelect(i) {
-    menuDiff = i - currSelect;
-    currSelect = i;
-    
-    defaultStartY += menuDiff * 42;
-    defaultEndY += menuDiff * 42;
-    defaultEndX = endXPositions[i];
-	
-	defaultStartY = Math.min(Math.max(0, defaultStartY), 42 * 5);
-	defaultEndY = Math.min(Math.max(0, defaultStartY), 42 * 5);
-    
-    pauseAnimation = false;
-    if (doneAnimation) {
-        doneAnimation = false;
-        window.requestAnimationFrame(updateSelectAnimation);
-    }
-}
-function leaveSelect() {
-    pauseAnimation = true;
-}
-
 
 /********************************************************
  Particle Data
  ********************************************************/
-particles = new Array();
-for (let _ = 0; _ < 10; _++) {
-    createParticle(p1);
-    createParticle(p2);
-    createParticle(p3);
-    createParticle(p4);
-    createParticle(p5);
-    createParticle(p6);
-    createParticle(p7);
+let particles = new Array();
+for (let i = 0; i < 10; i++) {
+    createParticle(p1, i * 7);
+    createParticle(p2, i * 7 + 1);
+    createParticle(p3, i * 7 + 2);
+    createParticle(p4, i * 7 + 3);
+    createParticle(p5, i * 7 + 4);
+    createParticle(p6, i * 7 + 5);
+    createParticle(p7, i * 7 + 6);
 }
-function createParticle(p) {
+function createParticle(p, id) {
     let map = new Map();
     map.clear();
     map.set('startX', 0);					// Starting X position
@@ -217,8 +287,10 @@ function createParticle(p) {
     map.set('delay', 0);					// Delay before restarting the particle  iteration
     map.set('restartAnimation', false);		// Whether to restart the particle iteration
     map.set('image', p);					// Source image
+	map.set('id', id);						// ID - determines delay
     particles.push(map);
 }
+
 /* Main drawing function that generates a single animation rendering frame. */
 function drawParticles(context) {
     // console.log(particles[0].get('currIteration') + " / " + particles[0].get('iterations') + ", " + particles[0].get('restartAnimation') + ", " + particles[0].get('delay'));
@@ -229,12 +301,7 @@ function drawParticles(context) {
 		
         if (!particleFinished) {
             doneAnimationSoFar = false;
-            drawImage(context,
-					  pInfo.get('image'),
-					  pInfo.get('currX'),
-					  pInfo.get('currY'),
-					  pInfo.get('currScale'),
-					  pInfo.get('currOpacity'));
+            drawImage(context, pInfo);
         }
     }
     doneAnimation = doneAnimationSoFar;
@@ -249,9 +316,8 @@ function updateParticleInfo(pInfo) {
 		
 	// Waiting to start iterating	
     } else if (pInfo.get('delay') > 0) {
-        if (menuDiff != 0) {
-            jumpParticleY(pInfo);
-        } if (!pauseAnimation)
+        updateParticleY(pInfo);
+        if (!pauseAnimation)
             pInfo.set('delay', pInfo.get('delay') - 1);
         return pauseAnimation;
     }
@@ -270,11 +336,13 @@ function updateParticleInfo(pInfo) {
 }
 
 function resetParticleInfo(pInfo) {
-    if (!pauseAnimation) {
-        let move = defaultStartX - defaultEndX;
-        let rand = randomInteger(0, move * 0.6);
+	if (pauseAnimation) {
+		pInfo.set('restartAnimation', false);
+    } else {
+        let moveX = defaultStartX - defaultEndX;
+        let rand = randomInteger(0, moveX * 0.6);
         pInfo.set('startX',         defaultStartX - rand);
-        pInfo.set('endX',           defaultEndX + randomInteger(0, 50) + move * 0.6 - rand);
+        pInfo.set('endX',           defaultEndX + randomInteger(0, 50) + moveX * 0.6 - rand);
         pInfo.set('startY',         defaultStartY + randomInteger(-7, 3));
         pInfo.set('endY',           defaultEndY + randomInteger(2, 6));
         pInfo.set('startScale',     0.6 * Math.random() + 0.6);
@@ -282,29 +350,26 @@ function resetParticleInfo(pInfo) {
         pInfo.set('currX',          pInfo.get('startX'));
         pInfo.set('currY',          pInfo.get('startY'));
         pInfo.set('currScale',      pInfo.get('startScale'));
-        pInfo.set('iterations',     randomInteger(50, maxIterations) * fps / 100);
+        pInfo.set('iterations',     maxIterations * fps / 100);
         pInfo.set('currIteration',  0);
-			
-        if (!pInfo.get('restartAnimation')) {
-            pInfo.set('delay',            randomInteger(0, maxIterations) * fps / 100);
+		
+		// Animation running like usual
+		if (pInfo.get('restartAnimation')) {
+			pInfo.set('delay', 0);
+		// Animation just restarted
+		} else {
+            pInfo.set('delay',            pInfo.get('id') * fps / 100);
             pInfo.set('restartAnimation', true);
-        } else {
-            pInfo.set('delay', 0);
         }
-    } else {
-        pInfo.set('restartAnimation', false);
     }
     pInfo.set('currOpacity', 0);
 }
 
-function randomInteger(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function jumpParticleY(pInfo) {
-    pInfo.set('startY', Math.min(5 * 42, Math.max(0, pInfo.get('startY') + menuDiff * 42)));
-    pInfo.set('endY', Math.min(5 * 42, Math.max(0, pInfo.get('endY') + menuDiff * 42)));
-    pInfo.set('currY', Math.min(5 * 42, Math.max(0, pInfo.get('startY') + menuDiff * 42)));
+/* Jump new flame particle y-ToValues when user hovers to a new option */
+function updateParticleY(pInfo) {
+    pInfo.set('startY',	defaultStartY);
+    pInfo.set('endY',	defaultEndY);
+    pInfo.set('currY',	defaultStartY);
 }
 
 /********************************************************
@@ -329,7 +394,7 @@ function selectMenu(event, i) {
     setTimeout(() => {
         text.style.transition = '0.5s';
         text.style.transform = 'initial';
-    }, 100);
+    }, 5);
 }
 
 let menuTransitioning = false;
@@ -340,7 +405,7 @@ function goToMenu(i) {
 	menuTransitioning = true;
 	setTimeout(() => {menuTransitioning = false;}, 750);
 	
-	if (i == -1)		goToOriginalMenu();
+	if (i == -1)		goToMainMenu();
 	else if (i == 0)	goToAboutMenu();
 	else if (i == 1)	goToProjectsMenu();
 	else if (i == 2)	goToMusicMenu();
@@ -351,189 +416,190 @@ function goToMenu(i) {
 	handleScreenResize();
 }
 
-function goToOriginalMenu() {
-	if (currScreen == 0) {
-		cssSetId('tv', 'height', '');   cssSetId('tv_body', 'height', '');  cssSetId('tv_screen', 'height', '');
-		cssSetId('tv', 'bottom', '');   cssSetId('tv_body', 'bottom', '');  cssSetId('tv_screen', 'bottom', '');
-		cssSetId('tv', 'right', '');   	cssSetId('tv_body', 'right', ''); 	cssSetId('tv_screen', 'right', '');
-																			cssSetId("tv_screen", 'opacity', '0');
-		cssSetId('stand', 'height', '285%');
-		cssSetId('stand', 'bottom', '-333%');
-		cssSetId('stand', 'right', '-80%');
-		cssSetId('room_zoom', 'transform', 'scale(3) translate(10%)');
+function goToMainMenu() {
+	if (currScreen == 0)
+		goToMainMenuAbout();
+	else if (currScreen == 1) {
 		
-		cssSetId('background', 'width', '100%');
-		cssSetId('background', 'height', '100%');
-		cssSetId('background', 'min-width', '1000px');
-		cssSetId('background', 'right', '0px');
-		cssSetId('background', 'bottom', '0px');
-		cssSetId('background', 'transform', 'scale(1)');
-		cssSetId('music_block', 'display', 'none');
+	} else if (currScreen == 2)
+		goToMainMenuMusic();
+	else if (currScreen == 3) {
 		
-		setTimeout(() => {
-			cssSetId('background', 'overflow', 'visible');
-			cssSetId('c15', 'display', 'block');
-			cssSetId("tv_body", 'z-index', '-5');
-			cssSetId("tv_screen", 'z-index', '-5');
-		}, 500);
+	} else if (currScreen == 4) {
 		
-	} else if (currScreen == 1) {
-		
-	} else if (currScreen == 2) {
-		cssSetId('background', 'transform', 'translate(0%, 0%)');
-		cssSetId('c14', 'transform', 'translate(0%, -100%)');
-		
-		cssSetId('music_block_title', 'right', '-500px');
-		cssSetId('cd', 'right', '-1000px');
-		cssSetId('album_block', 'top', '-100%');
-		
-		cssSetId('c5', 'display', 'block');
-		cssSetId('c5', 'filter', 'opacity(1)');
-		
-		cssSetId('c13', 'transition', '0s');
-		cssSetId('c13', 'background-position', '50% 0%');
-		
-		setTimeout(() => {
-			cssSetId('music_block', 'display', 'none');
-			cssSetId('music_block_back', 'display', 'none');
-			cssSetId('music_block_album_scroll', 'display', 'none');
-			
-			cssSetId('music_block_title', 'right', '75px');
-			cssSetId('cd', 'right', '-300px');
-			cssSetId('album_block', 'top', '0%');
-		}, 500)
 	}
-	
-	
-	
 	scaleMainMenuBackground()
+}
+function goToMainMenuAbout() {
+	cssSetIdToValues('tv',			['height', '', 'bottom', '', 'right', '']);
+	cssSetIdToValues('tv_body',		['height', '', 'bottom', '', 'right', '']);
+	cssSetIdToValues('tv_screen',	['height', '', 'bottom', '', 'right', '', 'opacity', '0']);
+	cssSetIdToValues('stand',		['height', '285%', 'bottom', '-333%', 'right', '-80%']);
+	cssSetIdToValues('background',	['width', '100%', 'height', '100%', 'right', '0px', 'bottom', '0px',
+									'min-width', '1000px', 'transform', 'scale(1)']);
+		
+	cssSetId('room_zoom', 'transform', 'scale(3) translate(10%)');
+	cssSetId('music_block', 'display', 'none');
+		
+	updateStaticCanvasSize(false)
+	turnTVDefault();
+		
+	setTimeout(() => {
+		cssSetId('c15', 'display', 'block');			// Reshow the blue above-cloud background
+		cssSetId('background', 'overflow', 'visible');	// Reshow the overpeeking top building
+		cssSetId("tv_body", 'z-index', '-5');
+		cssSetId("tv_screen", 'z-index', '-5');
+	}, 500);
+}
+function goToMainMenuMusic() {
+	cssSetId('background', 'transform', 'translate(0%, 0%)');
+	cssSetId('c14', 'transform', 'translate(0%, -100%)');
+		
+	cssSetId('music_block_title', 'right', '-500px');
+	cssSetId('cd', 'right', '-1000px');
+	cssSetId('album_block', 'top', '-100%');
+	
+	cssSetIdToValues('c5',	['display', 'block',
+						'filter', 'opacity(1)']);
+	cssSetIdToValues('c13',	['transition', '0s',
+						'background-position', '50% 0%']);
+		
+	setTimeout(() => {
+		cssSetId('music_block', 'display', 'none');
+		cssSetId('music_block_back', 'display', 'none');
+		cssSetId('music_block_album_scroll', 'display', 'none');
+		cssSetId('music_block_title', 'right', '75px');
+		cssSetId('cd', 'right', '-300px');
+		cssSetId('album_block', 'top', '0%');
+	}, 500)
 }
 
 let aboutMenuTransitioning = false;
 function goToAboutMenu() {
-	cssSetId('tv', 'height', '65%');    cssSetId('tv_body', 'height', '65%');   cssSetId('tv_screen', 'height', '65%');
-	cssSetId('tv', 'bottom', '27%');    cssSetId('tv_body', 'bottom', '27%');   cssSetId('tv_screen', 'bottom', '27%');
-	cssSetId('tv', 'right', '120px');   cssSetId('tv_body', 'right', '120px');  cssSetId('tv_screen', 'right', '120px');
-                                        cssSetId("tv_body", 'z-index', '11');   cssSetId("tv_screen", 'z-index', '11');
-                                                                                cssSetId("tv_screen", 'opacity', '1');
-    cssSetId('stand', 'height', '55%');
-	cssSetId('stand', 'bottom', '-25%');
-	cssSetId('stand', 'right', '75px');
-	cssSetId('room_zoom', 'transform', 'scale(1) translate(0)');
+	cssSetIdToValues('tv',			['height', '65%', 'bottom', '27%', 'right', '120px']);
+	cssSetIdToValues('tv_body',		['height', '65%', 'bottom', '27%', 'right', '120px', 'z-index', '11']);
+	cssSetIdToValues('tv_screen',	['height', '65%', 'bottom', '27%', 'right', '120px', 'z-index', '11', 'opacity', '0.8']);
 	
-	cssSetId('background', 'transform', 'scale(0.35)');
-	cssSetId('background', 'overflow', 'hidden');
+	cssSetIdToValues('stand',		['height', '55%', 'bottom', '-25%', 'right', '75px']);
+	cssSetIdToValues('background',	['width', 'calc(1.4 * max(100vh, 600px))', 'height', "calc(1.05 * max(100vh, 600px))",
+									'right', "calc(min(-12.72vh, -76.36px) + 30px)", 'bottom', "min(-1.05vh, -6.3px)",
+									'min-width', '1px', 'transform', 'scale(0.35)', 'overflow', 'hidden']);
+	
+	cssSetId('room_zoom', 'transform', 'scale(1) translate(0)');
 	cssSetId('c15', 'display', 'none');
 	cssSetId('music_block', 'display', 'none');
 	
-	cssSetId('background', 'min-width', "1px");
-	cssSetId('background', 'width', "calc(1.4 * max(100vh, 600px))");
-	cssSetId('background', 'height', "calc(1.05 * max(100vh, 600px))");
-	cssSetId('background', 'right', "calc(min(-12.72vh, -76.36px) + 30px)");
-	cssSetId('background', 'bottom', "min(-1.05vh, -6.3px)");
+	turnTVOn();
 	
-	aboutMenuTransitioning = true;
+	aboutMenuTransitioning = true;		
 	for (let i = 1; i <= 11; i++) {
 		setTimeout(() => {
+			updateStaticCanvasSize(true);
 			handleScreenResize();
 			if (i == 11) aboutMenuTransitioning = false;
 		}, 50 * i);
 	}
 }
 
-function cssGetClass(className) {
-	return document.getElementsByClassName(className);
-}
-function cssSetClass(className, property, value) {
-	let elements = cssGetClass(className)
-	for (let element of elements) {
-		element.style.setProperty(property, value);
-	}
-}
-
+let windowWidth = Math.max(window.innerWidth, 1000);
+let windowHeight = Math.max(window.innerHeight, 600);
 
 function handleScreenResize() {
-	let windowWidth = Math.max(window.innerWidth, 1000);
-	let windowHeight = Math.max(window.innerHeight, 600);
-    
+	windowWidth = Math.max(window.innerWidth, 1000)
+	windowHeight = Math.max(window.innerHeight, 600);
+	
 	if (currScreen == 0) {
-		if (aboutMenuTransitioning) return;
-		
-		let stand = cssGetId('stand');
-		cssSetId("about", "width", 'calc(100% - ' + (stand.offsetWidth + 375) + 'px');
-		cssSetId("about_background", "width", 'calc(100% - ' + (stand.offsetWidth + 375) + 'px');
-		cssSetId("about_submenu", "width", 'calc(100% - ' + (stand.offsetWidth + 270) + 'px');
-		
-		let aboutSubmenuWidth = cssGetId('about_submenu').offsetWidth;
-		if (currAboutSubmenu == 'sources') {
-			paper1.classList.remove('paper_hoverable');
-			paper1.style.setProperty('left', 'max(0px, calc(100% * 0.5 - 186px))');
-			cssSetId('sources_block', 'display', 'block');
-		} else {
-			paper1.classList.add('paper_hoverable');
-			let paper1Width = Math.min(aboutSubmenuWidth, Math.max(0.6 * windowHeight * 0.9, 0.6 * aboutSubmenuWidth));
-			paper1.style.setProperty('width', paper1Width + 'px');
-			paper1.style.setProperty('left', 'calc((100% - ' + (paper1Width) + 'px) / 2)');
-			paper1.style.setProperty('top', 'calc((100% - ' + (paper1Width / 0.9) + 'px) / 2)');
-			cssSetId('sources_block', 'display', 'none');
-			
-			document.documentElement.style.setProperty("--language_select_font_size", (paper1Width / 6.9) + 'px');
-		}
+		handleScreenResizeAbout();
 	} else if (currScreen == 1) {
 		
 	} else if (currScreen == 2) {
-		let albumHeight = Math.min(700, windowHeight * 0.8 - 300 * windowHeight / windowWidth + 100);
-		cssSetId('album_holder', 'height', albumHeight + "px");
-		cssSetId('album_holder', 'top', 0.6 * (windowHeight - albumHeight) + "px");
-		cssSetId('album_descriptions', 'width', 'calc(100% - ' + (245 + albumHeight) + 'px)');
-		if (!rotating)
-			updateAlbumCoverDetails(albumHeight);
-		
-		let albumSectionTitles = cssFindAll('#album_section_title span');
-		albumSectionTitles.forEach(x => x.style.setProperty('font-size', albumHeight / 35 + 'pt'));
-		cssSetClass('album_section_title_active', 'font-size', albumHeight / 30 + 'pt');
-		
-		scrollAlbumDescription();
+		handleScreenResizeMusic();
 	} else if (currScreen == 3) {
 		
 	} else if (currScreen == 4) {
 		
 	}
 }
-
-let albumCoverDetails = [[['font-size', 7.125, 'right', 20, 'bottom', 30],	['font-size', 10.6875, 'right', 3.3, 'bottom', 7.5],	['font-size', 18.3225, 'right', 1.9, 'bottom', 5.9],	['top', 20, 'right', 20, 'width', 15, 'height', 7.5]],
-						[['font-size', 10, 'right', 20, 'top', 11.3],		['font-size', 18, 'right', 3.9, 'top', 5.7],			['font-size', 30, 'right', 20, 'top', 25],				['left', 3.1, 'top', 12, 'width', 1.49, 'height', 5.5]],
-						[[], [], [], []],
-						[[], [], [], []],
-						[[], [], [], []],
-						[[], [], [], []],
-						[[], [], [], []],
-						[[], [], [], []]];
-
-function updateAlbumCoverDetails(albumHeight) {
-	let h1 = cssFind('#album h1');
-	let h2 = cssFind('#album h2');
-	let h3 = cssFind('#album h3');
-	let seal = cssFind('#album div');
+function handleScreenResizeAbout() {
+	if (aboutMenuTransitioning) return;
 	
-	function removeCss(item) {
-		item.style.removeProperty('left');
-		item.style.removeProperty('top');
-		item.style.removeProperty('right');
-		item.style.removeProperty('bottom');
-		item.style.removeProperty('width');
-		item.style.removeProperty('height');
+	updateStaticCanvasSize(true);
+	staticLoop();
+	
+	let stand = cssGetId('stand');
+	cssSetId("about",				"width", 'calc(100% - ' + (stand.offsetWidth + 375) + 'px');
+	cssSetId("about_background",	"width", 'calc(100% - ' + (stand.offsetWidth + 375) + 'px');
+	cssSetId("about_submenu",		"width", 'calc(100% - ' + (stand.offsetWidth + 270) + 'px');
+		
+	let aboutSubmenuWidth = cssGetId('about_submenu').offsetWidth;
+	
+	if (currAboutSubmenu == 'sources') {
+		paper1.classList.remove('paper_hoverable');
+		paper1.style.setProperty('left', 'max(0px, calc(100% * 0.5 - 186px))');
+		
+		cssSetId('sources_block',		'margin-top', '0%');
+		cssSetId('sources_block_box',	'margin-top', '50px');
+		
+		// Anchor the right column of the sources box
+		let sourcesBoxTop = cssGetId('sources_block_box').offsetTop;
+		cssSetId('sources_block_right', 'top', (sourcesBoxTop) + 'px');
+		cssSetId('sources_block_box', 'height', Math.max(cssGetId('sources_block_left').offsetHeight, cssGetId('sources_block_right').offsetHeight) + 'px');
+		
+	} else {
+		let paper1Width = Math.min(aboutSubmenuWidth, Math.max(0.6 * windowHeight * 0.9, 0.6 * aboutSubmenuWidth));
+		paper1.classList.add('paper_hoverable');
+		paper1.style.setProperty('width', paper1Width + 'px');
+		paper1.style.setProperty('left', 'calc((100% - ' + (paper1Width) + 'px) / 2)');
+		paper1.style.setProperty('top', 'calc((100% - ' + (paper1Width / 0.9) + 'px) / 2)');
+		
+		document.documentElement.style.setProperty("--language_select_font_size", (paper1Width / 6.9) + 'px');
 	}
-	removeCss(h1);
-	removeCss(h2);
-	removeCss(h3);
-	removeCss(seal);
+}
+function handleScreenResizeMusic() {
+	let albumHeight = Math.min(700, windowHeight * 0.8 - 300 * windowHeight / windowWidth + 100);
+	cssSetIdToValues('album_holder',	['height', albumHeight + "px",
+										'top', 0.6 * (windowHeight - albumHeight) + "px"]);
+	cssSetId('album_descriptions', 'width', 'calc(100% - ' + (245 + albumHeight) + 'px)');
+		
+	if (!albumIsFlipping)
+		updateAlbumCoverDetails(albumHeight);
 	
-	let albumDetail = albumCoverDetails[currAlbum - 1];
-	for (let i = 0; i < albumDetail[0].length; i += 2) { h1.style.setProperty(albumDetail[0][i], (albumHeight / albumDetail[0][i + 1]) + 'px'); }
-	for (let i = 0; i < albumDetail[1].length; i += 2) { h2.style.setProperty(albumDetail[1][i], (albumHeight / albumDetail[1][i + 1]) + 'px'); }
-	for (let i = 0; i < albumDetail[2].length; i += 2) { h3.style.setProperty(albumDetail[2][i], (albumHeight / albumDetail[2][i + 1]) + 'px'); }
-	for (let i = 0; i < albumDetail[3].length; i += 2) { seal.style.setProperty(albumDetail[3][i], (albumHeight / albumDetail[3][i + 1]) + 'px'); }
+	cssSetClass('album_section_title_active', 'font-size', (albumHeight / 30) + 'pt');
+	cssSetAll('#album_section_title span', 'font-size', (albumHeight / 35) + 'pt');
+
+	scrollAlbumDescription();
+}
+
+function onHTMLLoad() {
+	currAlbum = parseInt(cssGetId('album_number').innerHTML.replace(/\D/g,''));
+	totalAlbums = parseInt(cssGetPseudoElement('album_number', ":after").getPropertyValue('content').replace(/\D/g,''));
+	
+	updateStaticCanvasSize(false);
+	
+	let spans = cssFindAll('#music_block_album_scroll span');
+	for (let i = 0; i < spans.length; i++) {
+		spans[i].style.setProperty('background-image', "url('assets/albums/album_" + albumImages[i] + "')")
+	}
+}
+function updateStaticCanvasSize(inAboutMenu) {
+	let canvas = cssGetId('tv_static');
+	let canvasHeight = (windowWidth / windowHeight <= 1.57) ? windowHeight : windowWidth / 1.57;
+	let canvasWidth = (windowWidth / windowHeight <= 1.57) ? windowHeight * 1.57 : windowWidth;
+	canvas.height = canvasHeight;
+	canvas.width = canvasWidth;
+	canvas.style.setProperty('top', ((windowHeight - canvasHeight) / 2) + 'px');
+	
+	if (inAboutMenu) {
+		canvas.style.setProperty('right', '120px');
+		canvas.style.setProperty('pointer-events', 'auto');
+		canvas.style.setProperty('cursor', 'pointer');	
+		canvas.style.setProperty('transform', 'scale(' + (0.47 * windowHeight / canvasHeight) + ') translateY(-2%)');
+	} else {
+		canvas.style.setProperty('right', ((canvasWidth - windowWidth) / 2) + 'px');
+		canvas.style.setProperty('pointer-events', 'none');
+		canvas.style.setProperty('cursor', 'auto');
+		canvas.style.setProperty('transform', 'scale(1) translateY(0%)');
+	}
 }
 
 function goToProjectsMenu() {
@@ -571,53 +637,17 @@ function goToResumeMenu() {
 }
 
 
-/* About
 
-Languages:
-- Python
-- Java
-- HTML/CSS
-- Javascript
-- C
-- R
-- Matlab
-- SQL
-
-Image Sources: ...
-
-*/
-// About: zoom out, revealing current screen to be screen of TV of my current laptop
-// Projects: glitchy thing
-// Music: zoom up
-// Resources: cloud up?
-// Resume: no animation
-
-// Font - Outfit
-
-document.onkeydown = checkKey;
-function checkKey(e) {
-	e = e || window.event;
-	
-	if (e.keyCode == 27) { // escape
-		if (currScreen == 0 && inAboutSubmenu)
-			aboutSubmenuBack()
-		else
-			goToMenu(-1)
-	} else if (currScreen == 2) {
-		if (e.keyCode == 37) // left
-			previousAlbum();
-		else if (e.keyCode == 39) // right
-			nextAlbum();
-	}
-}
-
-let sourcesData = [['top', '30%',		'transform', 'translateZ(0px) rotateZ(-2deg)'],
+/********************************************************
+ About Submenu, Sources and Languages
+ ********************************************************/
+let sourcesData = [['top', '20%',		'transform', 'translateZ(0px) rotateZ(-2deg)'],
 					['top', '-2%',		'transform', 'translateZ(0px) rotateZ(-1.5deg)'],
 					['bottom', '-2%',	'transform', 'translateZ(0px) rotateZ(1deg)'],
 					['bottom', '-2%',	'transform', 'translateZ(0px) rotateZ(0.5deg)'],
 					['top', '-2%',		'transform', 'translateZ(0px) rotateZ(1.5deg)'],
 					['bottom', '0%',	'transform', 'translateZ(0px)']];
-let languageData = [['top', '20%',		'transform', 'translateZ(0px)'],
+let languageData = [['transform', 'translateZ(0px)'],
 					['top', '0%',		'transform', 'translateZ(0px)'],
 					['bottom', '0%',	'transform', 'translateZ(0px)'],
 					['bottom', '0%',	'transform', 'translateZ(0px)'],
@@ -642,32 +672,32 @@ function aboutSubmenuOn(data) {
 	cssSetId('about_submenu_quitter', 'display', 'block');
 	cssSetId('about_submenu', 'display', 'block');
 	
+	cssSetId('tv_static', 'transition', '0s');
+	cssSetId('tv_static', 'background-color', 'black');
+	setTimeout(() => cssSetId('tv_static', 'transition', '0.5s'), 5);
+	
+	// Changing classes
 	let papers = cssGetClass('paper');
 	for (let i = 0; i < papers.length; i++) {
 		papers[i].classList.remove((currAboutSubmenu == 'language') ? 'map' + (i + 1) : 'newspaper' + (i + 1));
 		papers[i].classList.add((currAboutSubmenu == 'language') ? 'newspaper' + (i + 1) : 'map' + (i + 1));
 	}
-	handleScreenResize();	
 	
+	// Animations with transition
 	setTimeout(() => {
 		cssSetId('about_submenu_quitter', 'opacity', '1');
 		for (let i = 0; i < papers.length; i++) {
+			papers[i].style.setProperty('transition', '0.3s');
 			setTimeout(() => {
-				papers[i].style.setProperty(data[i][0], data[i][1])
-				papers[i].style.setProperty(data[i][2], data[i][3])
+				cssSetToValues(papers[i], data[i]);
 			}, Math.random() * 50);
 		}
+		handleScreenResize();
 	}, 50);
 }
-function english() {
-	changeLanguage(cssGetClass('language_select')[0]);
-}
-function french() {
-	changeLanguage(cssGetClass('language_select')[1]);
-}
-function chinese() {
-	changeLanguage(cssGetClass('language_select')[2]);
-}
+function english() { changeLanguage(cssGetClass('language_select')[0]); }
+function french() { changeLanguage(cssGetClass('language_select')[1]); }
+function chinese() { changeLanguage(cssGetClass('language_select')[2]); }
 function changeLanguage(language) {
 	let currLanguage = cssGetClass('language_select_active')[0];
 	currLanguage.classList.remove('language_select_active')
@@ -675,10 +705,13 @@ function changeLanguage(language) {
 }
 function aboutSubmenuBack() {
 	cssSetId('about_submenu_quitter', 'opacity', '0');
+	cssSetId('sources_block', 'margin-top', '-300%');
+	cssSetId('sources_block_box', 'margin-top', '-150%');
 	
 	let papers = cssGetClass('paper');
 	for (let i = 0; i < papers.length; i++) {
-		papers[i].style.setProperty(languageData[i][0], (i == 5) ? '-500%' : '-100%');
+		papers[i].style.removeProperty('width');
+		papers[i].style.setProperty(sourcesData[i][0], (i == 5) ? '-500%' : '-150%');
 		papers[i].style.setProperty('transform', 'translateZ(100px) rotateZ(0deg)')
 	}
 	setTimeout(() => {
@@ -689,8 +722,295 @@ function aboutSubmenuBack() {
 			cssSetId('about_submenu', 'display', 'none');
 		}
 		inAboutSubmenu = false;
-	}, 500);	
+	}, 500);
 }
+function sourcesFocusOn(id) {
+	let tab = cssGetId(id);
+	let active = cssGetClass('sources_block_active')[0];
+	active.classList.remove('sources_block_active');
+	tab.classList.add('sources_block_active');
+	
+	let paragraphs = cssFindAll('#' + id + ' p');
+	for (let i = 0; i < paragraphs.length; i++) {
+		paragraphs[i].style.setProperty('display', 'block !important');
+	}
+}
+
+function sourcesMainPage()	{ sourcesFocusOn('sources_block_main_page'); }
+function sourcesAbout()		{ sourcesFocusOn('sources_block_about'); }
+function sourcesProjects()	{ sourcesFocusOn('sources_block_projects'); }
+function sourcesMusic()		{ sourcesFocusOn('sources_block_music'); }
+function sourcesResources()	{ sourcesFocusOn('sources_block_resources'); }
+function sourcesResources()	{ sourcesFocusOn('sources_block_resources'); }
+function sourcesResume()	{ sourcesFocusOn('sources_block_resume'); }
+
+/********************************************************
+ TV Static
+ ********************************************************/
+
+let TVOn = false;
+let TVAnimationDone = true;
+let forceTVAnimationDone = false;
+let opacity = 0;
+let progress = 0;
+let brightness = 0;
+let frameFrequency = 30;
+let flicker = 0;
+
+function turnTVOn() {
+	forceTVAnimationDone = false;
+	TVOn = true;
+	
+	cssSetId('tv_static', 'transition', '0s');
+	cssSetId('tv_static', 'background-color', '');
+	setTimeout(() => cssSetId('tv_static', 'transition', '0.5s'), 5);
+	
+	if (!TVAnimationDone) return;
+	TVAnimationDone = false;
+	staticLoop();
+}
+
+function turnTVOff() {
+	if (forceTVAnimationDone) return;
+	TVOn = false;
+}
+function turnTVDefault() {
+	TVOn = true;
+	forceTVAnimationDone = true;
+}
+
+function staticLoop() {
+	let canvas = cssGetId('tv_static');
+	let context = canvas.getContext('2d');
+	let width = canvas.width;
+	let height = canvas.height;	
+	context.clearRect(0, 0, width, height);
+	drawStatic(context, width, height, opacity, brightness);
+	drawBorders(context, width, height, progress);
+	
+	let deltaOpacity = 0;
+	let deltaBrightness = 0;
+	let deltaProgress = 0;
+	let deltaFlicker = -0.02;
+	if (TVOn) {
+		deltaBrightness = -0.15;
+		deltaProgress = -0.15;
+		if (progress <= 0.5) {
+			if (flicker > 0) {
+				deltaOpacity = -0.02;
+			} else {
+				deltaOpacity = -0.1;
+			}
+		}
+	} else {
+		deltaOpacity = 0.2;
+		if (opacity >= 0.8) {
+			deltaBrightness = 0.15;
+			deltaProgress = 0.15;
+		}
+	}
+	if (forceTVAnimationDone) {
+		deltaOpacity = -0.2;
+		deltaBrightness = -0.2;
+		deltaProgress = -0.2;
+		deltaFlicker = -0.2;
+	}
+	opacity = bound(opacity + deltaOpacity, forceTVAnimationDone ? -0.1 : 0, 1);
+	brightness = bound(brightness + deltaBrightness, 0 ,1);
+	progress = bound(progress + deltaProgress, 0, 1.2);
+	flicker = bound(flicker + deltaFlicker, 0, 1);
+	
+	if (Math.random() < 0.01 && !forceTVAnimationDone) {
+		let rand = Math.random();
+		flicker = rand * 0.5;
+		opacity += rand * 0.3;
+	}
+	
+	TVAnimationDone = (!forceTVAnimationDone && opacity == 1 && brightness == 1 && progress == 1.2) || (forceTVAnimationDone && opacity == -0.1 && brightness == 0 && progress == 0);
+	
+	setTimeout(() => {
+		if (!TVAnimationDone) {
+			window.requestAnimationFrame(() => staticLoop(context));
+		} else if (TVOn) {
+			context.clearRect(0, 0, width, height);
+		}
+	}, frameFrequency);
+}
+function drawBorders(context, width, height, progress) {
+	if (progress == 0) return;
+	context.fillstyle = 'black';
+	if (progress == 1) {
+		context.fillRect(0, 0, width, height);
+		return;
+	}
+	context.filter = 'blur(' + gaussianRandom(10, 4) + 'px)';
+	
+	let bound = height * progress / 2;
+	let startY = random(50) + bound;
+	
+	drawWavyBox(context, 0, width, bound, false, 50 * (1 - progress), 3);
+	drawWavyBox(context, height - bound, width, bound, true, 50 * (1 - progress), 3);
+}
+function random(variation) {
+	return Math.random() * variation - variation / 2;
+}
+function drawWavyBox(context, y, width, height, wavyOnTop, amplitude, juts) {
+	if (wavyOnTop) {
+		context.beginPath();
+		context.moveTo(-10, y);
+		drawWavyLine(context, width, y, amplitude, juts);
+		context.lineTo(width + 10, y + height);
+		context.lineTo(-10, y + height);
+		context.lineTo(-10, y);
+		context.fill();
+	} else {
+		context.beginPath();
+		context.moveTo(-10, y);
+		context.lineTo(-10, y + height);
+		drawWavyLine(context, width, y + height, amplitude, juts);
+		context.lineTo(width + 10, y);
+		context.lineTo(-10, y);
+		context.fill();
+	}
+}
+function drawWavyLine(context, width, y, amplitude, juts) {
+	let currX = -10;
+	let currY = y;
+	for (let i = 0; i < juts; i++) {
+		let nextX = i / juts * width;
+		let nextY = random(amplitude) + currY;
+		let c1 = Math.random();
+		let c2 = Math.random();
+		
+		context.bezierCurveTo(c1 * currX + (1 - c1) * nextX, currY,
+							c2 * currX + (1 - c2) * nextX, nextY,
+							nextX,
+							nextY);
+		currX = nextX;
+		currY = nextY;
+	}
+	context.lineTo(width + 10, y);
+}
+
+
+// https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
+function gaussianRandom(mean, stdev) {
+    const u = 1 - Math.random();
+    const v = Math.random();
+    const z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    return z * stdev + mean;
+}
+
+const noise1 = new Image(); noise1.src = "assets/noise1.png";
+const noise2 = new Image(); noise2.src = "assets/noise2.png";
+const staticWave = new Image(); staticWave.src = "assets/static_wave.png";
+
+const boxHeights = [0.02, 0.05, 0.12];
+const boxOffsetYMeans = [0.1, 0.4, 0.3];
+const boxOffsetYStds = [0.03, 0.006, 0.04];
+
+function drawStatic(context, width, height, opacity, brightness) {
+	if (opacity < 0) return;
+	
+	// Base Noise
+	context.globalCompositeOperation = "overlay";
+    context.globalAlpha = opacity;
+	context.filter = 'none';
+	
+	let offsetX = 0;
+	let offsetY = 0;
+	let rotation = 90 * Math.round(Math.random() * 4);
+	let flip = Math.round(Math.random()) > 0.5;
+	let noise = Math.round(Math.random()) > 0.5 ? noise1 : noise2;
+	let size = noise.height;
+	
+	while (offsetX < width) {
+		while (offsetY < height) {
+			context.save();
+			context.translate(offsetX, offsetY);
+			context.scale(flip ? -1 : 1, 1);
+			context.rotate(rotation * Math.PI / 180);
+			
+			let x = 0;
+			let y = 0;
+			if (rotation % 360 == 0 && flip)	x = -size;
+			else if (rotation == 90) {
+				y = -size;
+				if (flip)	y = 0;
+			} else if (rotation == 180) {
+				x = -size;
+				y = -size;
+				if (flip) 	x = 0;
+			} else if (rotation == 270) {
+				x = -size;
+				if (flip) 	y = -size;
+			}
+			
+			context.drawImage(noise, x, y, size, size);
+			context.restore();
+			offsetY += size;
+		}
+		offsetX += size;
+		offsetY = 0;
+	}
+	
+	// Wavy static
+	context.globalCompositeOperation = "darken";
+	context.globalAlpha = gaussianRandom(opacity / 2, 0.01);
+	offsetY = gaussianRandom(-0.2, 0.2) * height;
+	context.drawImage(staticWave, 0, offsetY, width, width * staticWave.height / staticWave.width);
+	
+	// Middle grey boxes
+	context.globalAlpha = 1;
+	context.globalCompositeOperation = "normal";
+	let numBoxes = Math.round(Math.random() * 1) + 2;
+	for (let i = 0; i < numBoxes; i++) {
+		let boxHeight = Math.round(gaussianRandom(boxHeights[i], 0.1) * height);
+		rotation = (Math.round(gaussianRandom(0.5, 0.25) * 2) - 1) * Math.PI / 180;
+		offsetY = Math.round(gaussianRandom(boxOffsetYMeans[i], boxOffsetYStds[i]) * 1.5 * height - boxHeight);
+		
+		let color = Math.round(Math.random() * 122 + 123);
+		context.filter = 'blur(' + gaussianRandom(5, 2) + 'px)';
+		context.rotate(rotation);
+		context.fillStyle = "rgba(" + color + ", " + color + ", " + color + ", " + gaussianRandom(opacity / 2, 0.1) + ")";
+		
+		context.fillRect(-10, offsetY, width + 20, boxHeight);
+		context.rotate(-rotation);
+	}
+	
+	// Gradient boxes
+	for (let i = 0; i < 2; i++) {
+		offsetY = Math.round(gaussianRandom(i == 0 ? 0.7 : 0.2, 0.05) * height);
+		boxHeight = Math.round(gaussianRandom(i == 0 ? 0.1 : 0.15, 0.05) * height);
+		let gradient = context.createLinearGradient(0, offsetY, 0, offsetY + boxHeight);
+		if (i == 0) {
+			gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+			gradient.addColorStop(1, 'rgba(255, 255, 255, ' + opacity / 1.5 + ')');
+		} else {
+			gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+			gradient.addColorStop(1, 'rgba(0, 0, 0, ' + opacity / 1.5 + ')');
+		}
+		context.fillStyle = gradient;
+		//context.fillRect(-10, offsetY, width + 20, boxHeight);
+		drawWavyBox(context, offsetY, width + 20, boxHeight, false, 10, 5);
+	}
+	// Brightness box
+	context.fillStyle = 'rgba(255, 255, 255, ' + brightness + ')';
+	context.fillRect(0, 0, width, height);
+	
+	// Flicker box
+	context.fillStyle = 'rgba(200, 200, 200, ' + flicker + ')';
+	context.fillRect(0, height / 10, width, height / 3);
+	context.fillRect(0, height / 1.4, width, height / 8);
+	
+	// Bottom black box
+	blackBoxOffsetY = Math.round(gaussianRandom(0.1 * (1 - opacity) + 0.9, opacity * 0.03) * height);
+	boxHeight = height - offsetY;
+	context.filter = 'blur(1px)';
+	context.fillStyle = 'rgb(0, 0, 0)';
+	context.fillRect(-2, blackBoxOffsetY, width + 4, boxHeight);
+}
+
 
 /********************************************************
  Music Menu
@@ -702,16 +1022,6 @@ function cssGetPseudoElement(id, pseudo) {
 let currAlbum = 0;
 let totalAlbums = 0;
 
-function onHTMLLoad() {
-	currAlbum = parseInt(cssGetId('album_number').innerHTML.replace(/\D/g,''));
-	totalAlbums = parseInt(cssGetPseudoElement('album_number', ":after").getPropertyValue('content').replace(/\D/g,''));
-	
-	let spans = cssFindAll('#music_block_album_scroll span');
-	for (let i = 0; i < spans.length; i++) {
-		spans[i].style.setProperty('background-image', "url('assets/albums/album_" + albumImages[i] + "')")
-	}
-}
-
 function updateAlbum() {
 	updateAlbumNumber();
 	updateAlbumCoverAndInfo();
@@ -719,7 +1029,7 @@ function updateAlbum() {
 	updateAlbumScrollActive();
 }
 function skipToAlbum(number) {
-	if (rotating || currAlbum == number + 1) 		return;
+	if (albumIsFlipping || currAlbum == number + 1) 		return;
 	else if (currAlbum < number + 1) 	albumRotateNext = true;
 	else								albumRotateNext = false;
 	currAlbum = number + 1;
@@ -729,7 +1039,7 @@ function skipToAlbum(number) {
 function skipScroll() {
 	let scroller = cssGetId('album_descriptions_scroller');
 	let y = scroller.getBoundingClientRect().top;
-	let scrollPixels = Math.min(scroller.offsetHeight, Math.max(0, cursorY - y));
+	let scrollPixels = bound(cursorY - y, min=0, max=scroller.offsetHeight);
 	let scrollAmount = scrollPixels / scroller.offsetHeight * (scroller.scrollHeight - scroller.offsetHeight);
 	scroller.scrollTop = scrollAmount;
 }
@@ -780,14 +1090,14 @@ function updateAlbumSectionTitle() {
 	handleScreenResize();
 }
 function previousAlbum() {
-	if (rotating)	return;
+	if (albumIsFlipping)	return;
 	if (currAlbum == 1)		currAlbum = totalAlbums;
 	else					currAlbum -= 1;
 	albumRotateNext = false;
 	updateAlbum();
 }
 function nextAlbum() {
-	if (rotating)	return;
+	if (albumIsFlipping)	return;
 	if (currAlbum == totalAlbums)	currAlbum = 1;
 	else							currAlbum += 1;
 	albumRotateNext = true;
@@ -816,32 +1126,69 @@ let albumImages = ['classical_compositions_solo.jpg', 'classical_arrangements.jp
 let albumRotateNext = true;
 let albumDisplayFrames = 60;
 function displayAlbum(albumId) {
-	if (rotating)	return;
+	if (albumIsFlipping)	return;
 	let album = cssGetId('album');
 	let albumSectionTitle = cssGetId('album_section_title');
-	rotating = true;
+	albumIsFlipping = true;
 	for (let i = 1; i <= albumDisplayFrames; i++) {
 		let x = i / albumDisplayFrames;
 		setTimeout(() => {
 			let rotation = rotateDiffY;
 			if (albumRotateNext)	rotation += 180 * x;
 			else					rotation -= 180 * x;
-			if (i >= Math.round(albumDisplayFrames / 2))
+			if (i >= Math.round(albumDisplayFrames / 2)) {
 				rotation += 180;
-			album.style.setProperty('transform', 'rotateX(' + rotateDiffX + 'deg) rotateY(' + rotation + 'deg)');
-			if (i == Math.round(albumDisplayFrames / 2)) {
-				let windowWidth = Math.max(window.innerWidth, 1000);
-				let windowHeight = Math.max(window.innerHeight, 600);
-				let albumHeight = Math.min(700, windowHeight * 0.8 - 300 * windowHeight / windowWidth + 100);
-				album.style.setProperty('background-image', "url('assets/albums/" + albumImages[currAlbum - 1] + "')");
-				album.classList.remove(album.classList[0]);
-				album.classList.add(albumId);
-				updateAlbumCoverDetails(albumHeight);
+				if (i == Math.round(albumDisplayFrames / 2)) {
+					let windowWidth = Math.max(window.innerWidth, 1000);
+					let windowHeight = Math.max(window.innerHeight, 600);
+					let albumHeight = Math.min(700, windowHeight * 0.8 - 300 * windowHeight / windowWidth + 100);
+					album.style.setProperty('background-image', "url('assets/albums/" + albumImages[currAlbum - 1] + "')");
+					album.classList.remove(album.classList[0]);
+					album.classList.add(albumId);
+					updateAlbumCoverDetails(albumHeight);
+				}
 			}
+			album.style.setProperty('transform', 'rotateX(' + rotateDiffX + 'deg) rotateY(' + rotation + 'deg)');
+			
 			if (i == albumDisplayFrames)
-				rotating = false;
+				albumIsFlipping = false;
 		}, 150 * (2 / (1 + Math.exp(-2.2 * (x - 0.5)))) - 0.5);
 	}
+}
+
+let albumCoverDetails = [[['font-size', 7.125, 'right', 20, 'bottom', 30],	['font-size', 10.6875, 'right', 3.3, 'bottom', 7.5],	['font-size', 18.3225, 'right', 1.9, 'bottom', 5.9],	['top', 20, 'right', 20, 'width', 15, 'height', 7.5]],
+						[['font-size', 10, 'right', 20, 'top', 11.3],		['font-size', 18, 'right', 3.9, 'top', 5.7],			['font-size', 30, 'right', 20, 'top', 25],				['left', 3.1, 'top', 12, 'width', 1.49, 'height', 5.5]],
+						[[], [], [], []],
+						[[], [], [], []],
+						[[], [], [], []],
+						[[], [], [], []],
+						[[], [], [], []],
+						[[], [], [], []]];
+
+function updateAlbumCoverDetails(albumHeight) {
+	let h1 = cssFind('#album h1');
+	let h2 = cssFind('#album h2');
+	let h3 = cssFind('#album h3');
+	let seal = cssFind('#album div');
+	
+	function removeCss(item) {
+		item.style.removeProperty('left');
+		item.style.removeProperty('top');
+		item.style.removeProperty('right');
+		item.style.removeProperty('bottom');
+		item.style.removeProperty('width');
+		item.style.removeProperty('height');
+	}
+	removeCss(h1);
+	removeCss(h2);
+	removeCss(h3);
+	removeCss(seal);
+	
+	let albumDetail = albumCoverDetails[currAlbum - 1];
+	for (let i = 0; i < albumDetail[0].length; i += 2) { h1.style.setProperty(albumDetail[0][i], (albumHeight / albumDetail[0][i + 1]) + 'px'); }
+	for (let i = 0; i < albumDetail[1].length; i += 2) { h2.style.setProperty(albumDetail[1][i], (albumHeight / albumDetail[1][i + 1]) + 'px'); }
+	for (let i = 0; i < albumDetail[2].length; i += 2) { h3.style.setProperty(albumDetail[2][i], (albumHeight / albumDetail[2][i + 1]) + 'px'); }
+	for (let i = 0; i < albumDetail[3].length; i += 2) { seal.style.setProperty(albumDetail[3][i], (albumHeight / albumDetail[3][i + 1]) + 'px'); }
 }
 
 function findFirstDifferentIndex(from, to) {

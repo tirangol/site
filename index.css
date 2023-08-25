@@ -22,6 +22,14 @@ body {
     background-size: cover;
     transition: 0.5s;
 }
+#tv_static {
+	position: absolute;
+	z-index: 10;
+	pointer-events: none;
+	cursor: auto;
+	transition: 0.5s;
+	transform-origin: 100% 50%;
+}
 #tv {
     z-index: -5;
     background-image: url("assets/low_resolution/tvo.png");
@@ -36,9 +44,9 @@ body {
 #tv_screen {
     z-index: -5;
     background-image: url('assets/low_resolution/tv_screeno.png');
-    mix-blend-mode: multiply;
-    opacity: 0;
-	cursor: pointer;
+    mix-blend-mode: hard-light;
+    pointer-events: none;
+	opacity: 0;
 }
 #stand {
     height: 285%;
@@ -193,7 +201,7 @@ body {
 	filter: contrast(0.9) brightness(1.1);
 }
 .language_select {
-	font-family: 'Lexend';
+	font-family: 'Lexend', Tahoma, sans-serif;
 	font-weight: 300;
 	font-size:		calc(var(--language_select_font_size));
 	line-height:	calc(var(--language_select_font_size));
@@ -239,12 +247,12 @@ body {
 
 .language_select_active, .language_select_active:hover, .language_select_active:active {
 	background-color: rgba(255, 150, 100, 0.5) !important;
-	margin-left: calc(4% + var(--language_select_font_size) * 90 / 64) !important;
-	width: calc(92% - calc(var(--language_select_font_size) * 100 / 64)) !important;
+	margin-left: calc(4% + var(--language_select_font_size) * 85 / 64) !important;
+	width: calc(92% - calc(var(--language_select_font_size) * 95 / 64)) !important;
 }
 .language_select_active:before, .language_select_active:hover:before, .language_select_active:active:before {
 	filter: saturate(1) sepia(0) brightness(1) !important;
-	margin-left: calc(var(--language_select_font_size) * -105 / 64) !important;
+	margin-left: calc(var(--language_select_font_size) * -100 / 64) !important;
 }
 .language_select:nth-child(1) { top: 22.5%; }
 .language_select:nth-child(2) { top: calc(22.5% + var(--language_select_font_size)); }
@@ -253,11 +261,11 @@ body {
 .language_select:nth-child(2):before { background-image: url("assets/icons/flag_france.png"); }
 .language_select:nth-child(3):before { background-image: url("assets/icons/flag_china.png"); }
 
-#paper1 { z-index: 10;	left: 30%; top: -100%; }
-#paper2 { z-index: 7;	left: 0%; top: -100%; }
-#paper3 { z-index: 8;	left: 0%; bottom: -100%; }
-#paper4 { z-index: 9;	right: 0%; bottom: -100%; }
-#paper5 { z-index: 6;	right: 0%; top: -100%; }
+#paper1 { z-index: 10;	left: 30%; top: -150%; }
+#paper2 { z-index: 7;	left: 0%; top: -150%; }
+#paper3 { z-index: 8;	left: 0%; bottom: -150%; }
+#paper4 { z-index: 9;	right: 0%; bottom: -150%; }
+#paper5 { z-index: 6;	right: 0%; top: -150%; }
 #papercover {
 	background-image: url("assets/low_resolution/map_cover.png");
 	background-size: contain;
@@ -269,31 +277,170 @@ body {
 	background-repeat: repeat;
 	opacity: 1;
 }
-.map1 { aspect-ratio: 767 / 793; background-image: url('assets/low_resolution/map_1.png'); width: min(100%, max(calc(50vh * 767 / 793), 45%)); }
-.map2 { aspect-ratio: 584 / 793; background-image: url('assets/low_resolution/map_2.png'); width: min(100%, max(calc(60vh * 584 / 793), 40%)); }
-.map3 { aspect-ratio: 624 / 805; background-image: url('assets/low_resolution/map_3.png'); width: min(100%, max(calc(70vh * 624 / 805), 50%)); }
-.map4 { aspect-ratio: 1178 / 801; background-image: url('assets/low_resolution/map_4.png'); width: min(100%, max(calc(45vh * 1178 / 801), 60%)); }
-.map5 { aspect-ratio: 625 / 794; background-image: url('assets/low_resolution/map_5.png'); width: min(100%, max(calc(85vh * 625 / 794), 60%)); }
-.map6 { background-image: url("assets/low_resolution/map_cover.png"); width: min(100%, 300px); }
+.map1 { aspect-ratio: 767 / 793; background-image: url('assets/low_resolution/map_1.png'); width: min(100%, max(calc(50vh * 767 / 793), 45%)); filter: brightness(1.05) saturate(0.95); display: none; }
+.map2 { aspect-ratio: 584 / 793; background-image: url('assets/low_resolution/map_2.png'); width: min(100%, max(calc(60vh * 584 / 793), 40%)); filter: brightness(1.05) saturate(0.95); }
+.map3 { aspect-ratio: 624 / 805; background-image: url('assets/low_resolution/map_3.png'); width: min(100%, max(calc(70vh * 624 / 805), 50%)); filter: brightness(1.05) saturate(0.95); }
+.map4 { aspect-ratio: 1178 / 801; background-image: url('assets/low_resolution/map_4.png'); width: min(100%, max(calc(45vh * 1178 / 801), 60%)); filter: brightness(1.05) saturate(0.95); }
+.map5 { aspect-ratio: 625 / 794; background-image: url('assets/low_resolution/map_5.png'); width: min(100%, max(calc(85vh * 625 / 794), 60%)); filter: brightness(1.05) saturate(0.95); }
+.map6 { background-image: url("assets/low_resolution/map_cover.png"); width: min(100%, 300px) !important; }
 .newspaper1 { border: 2px solid rgba(0, 0, 0, 0.1); aspect-ratio: 0.9; background-image: url('assets/low_resolution/language_picker.png'); }
 .newspaper2 { border: 2px solid rgba(0, 0, 0, 0.1); aspect-ratio: 493 / 720; background-image: url('assets/low_resolution/newspaper_3.png'); width: min(100%, max(calc(60vh * 493 / 720), 40%)); }
 .newspaper3 { border: 2px solid rgba(0, 0, 0, 0.1); aspect-ratio: 545 / 778; background-image: url('assets/low_resolution/newspaper_1.png'); width: min(100%, max(calc(70vh * 545 / 778), 50%)); }
 .newspaper4 { border: 2px solid rgba(0, 0, 0, 0.1); aspect-ratio: 611 / 777; background-image: url('assets/low_resolution/newspaper_2.png'); width: min(100%, max(calc(45vh * 611 / 777), 60%)); }
 .newspaper5 { border: 2px solid rgba(0, 0, 0, 0.1); aspect-ratio: 583 / 774; background-image: url('assets/low_resolution/newspaper_5.png'); width: min(100%, max(calc(85vh * 583 / 774), 60%)); }
-.newspaper6 { border: 2px solid rgba(0, 0, 0, 0.1); background-image: url('assets/low_resolution/newspaper_cover.png'); filter: brightness(0.8) contrast(2) brightness(1.5); width: min(100%, 300px); }
+.newspaper6 { border: 2px solid rgba(0, 0, 0, 0.1); background-image: url('assets/low_resolution/newspaper_cover.png'); filter: brightness(0.8) contrast(2) brightness(1.5); width: min(100%, 300px) !important; }
 
+#sources_block_container {
+	width: 90%;
+	height: 100%;
+	position: absolute;
+	overflow: hidden;
+	left: 5%
+}
 #sources_block {
 	position: absolute;
 	transform: translateZ(100px) rotateZ(0deg);
 	z-index: 20;
+	height: 100%;
+	width: calc(100% + 25px);
+	margin-left: 0%;
+	transition: 0.3s;
+	margin-top: -300%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+#sources_block_box {
+	margin-top: -150%;
+	width: 100%;
+	background-color: rgba(255, 255, 200, 0.4);
+	overflow: hidden;
 }
 #sources_block h3 {
 	font-size: 48pt;
+	font-family: 'IM Fell DW Pica';
+	font-style: italic;
+	font-weight: normal;
+	margin-bottom: 0px;
+	text-shadow: 0px 0px 5px rgb(255, 255, 200);
+	text-align: right;
+	margin-right: 5%;
+	margin-top: 5%;
+}
+#sources_block h4 {
+	font-family: 'Dancing Script';
+	font-size: 24pt;
+	margin: 0px;
+	margin-bottom: 3px;
+	text-shadow: 0px 0px 5px rgb(255, 255, 200);
+}
+#sources_block h5 {
+	font-family: 'IM Fell DW Pica';
+	font-weight: 400;
+	font-size: 20pt;
+	margin: 0px;
+	user-select: none;
 }
 #sources_block p {
 	font-size: 18pt;
+	font-family: 'Charm';
+	margin: 0px;
+	line-height: 28px;
+	text-shadow: 0px 0px 5px rgb(255, 255, 200);
+}
+#sources_block_p {
+	display: inline-block;
+	position: absolute;
+	right: 5% !important;
+	backdrop-filter: blur(3px);
+	white-space: nowrap;
+}
+#sources_block p a {
+	color: black;
+	text-decoration: none;
+	position: relative;
+	display: inline-block;
+	color: rgba(100, 70, 60);
+	transition: 0.3s;
+}
+#sources_block a:after {
+	content: "";
+	position: absolute;
+	width: 100%;
+	left: 0;
+	transition: 0.3s;
+	bottom: 4px;
+	height: 2px;
+	background-color: rgba(50, 20, 10, 0.4);
+}
+#sources_block a:hover {
+	color: black;
+}
+#sources_block a:hover:after {
+	bottom: 7px;
+	height: 7px;
+	background-color: rgba(50, 20, 10, 0.2);
 }
 
+#sources_block_left {
+	padding: 2%;
+	left: 0%;
+	width: 36%;
+}
+#sources_block_left p {
+	display: inline-block;
+	backdrop-filter: blur(3px);
+}
+#sources_block_right {
+	position: absolute;
+	padding: 2%;
+	left: 42%;
+	width: calc(60% - 25px);
+}
+#sources_block_right div {
+	background-color: rgba(255, 255, 222, 0);
+	padding: 0px 5px;
+	transition: 0.3s;
+	margin-left: -5px;
+}
+#sources_block_right div:hover {
+	background-color: rgba(255, 255, 222, 0.3);
+	backdrop-filter: blur(1px);
+}
+#sources_block_right div:active {
+	background-color: rgba(255, 255, 222, 0.8);
+	transition: 0s;
+}
+#sources_block_right h5:before {
+	content: '↪ ';
+}
+#sources_block_right p {
+	transition: 0.3s;
+	font-size: 16pt;
+	text-shadow: none;
+	line-height: 0%;
+	opacity: 0;
+	pointer-events: none;
+}
+.sources_block_active {
+	background-color: rgba(255, 255, 222, 0.5) !important;
+	backdrop-filter: blur(1px);
+}
+.sources_block_active p {
+	line-height: 140% !important;
+	opacity: 1 !important;
+	pointer-events: auto !important;
+}
+#sources_block_left p:nth-child(2) { font-family: 'Zilla Slab'; font-weight: 500; }
+#sources_block_left p:nth-child(4) { font-family: 'Kreon'; font-weight: 300; }
+#sources_block_left p:nth-child(6) { font-family: 'Lexend'; font-weight: 300; }
+#sources_block_left p:nth-child(8) { font-family: 'IM Fell DW Pica'; font-style: italic; }
+#sources_block_left p:nth-child(10) { font-family: 'Ysabeau Infant'; }
+#sources_block_left p:nth-child(12) { font-family: 'Sofia Sans Extra Condensed'; }
+#sources_block_left p:nth-child(14) { font-family: 'Friz Quadrata No. 2 W01'; }
+#sources_block_left p:nth-child(16) { font-family: 'Cardo'; }
+#sources_block_left p:nth-child(18) { font-family: 'Lusitana'; }
+#sources_block_left p:nth-child(20) { font-family: 'Poltawski Nowy'; }
+#sources_block_left p:nth-child(22) { font-family: 'Dancing Script'; }
 
 #link_block, #setting_block {
     position: absolute;
@@ -580,7 +727,7 @@ body {
 	position: absolute;
 	font-weight: 400;
 	margin-top: -7%;
-	color: rgba(150, 150, 222, 0.8);
+	color: rgba(150, 150, 222, 0.9);
 	width: 150%;
 }
 #album_section_title span {
@@ -588,12 +735,12 @@ body {
 	cursor: pointer;
 }
 #album_section_title span:hover {
-	color: rgba(200, 200, 255, 0.9);
+	color: rgba(200, 200, 255, 1);
 }
 .album_section_title_active {
 	font-size: 24pt;
 	font-weight: 700;
-	color: rgba(200, 200, 255, 0.9);
+	color: rgba(200, 200, 255, 1);
 }
 
 #album {
@@ -654,25 +801,19 @@ body {
 	right: 365px;
 	bottom: 105px;
 }
-.album_classical_arrangements h1, .album_classical_arrangements h2 {
-	background-image: url("assets/gold.jpg");
-	background-size: 350%;
-    background-clip: text;
-    -webkit-background-clip: text;
-}
 .album_classical_arrangements h1:after { content: 'Arrangements'; }
 .album_classical_arrangements h2:after { content: 'of Classical Music'; }
 .album_classical_arrangements h3:after { content: 'Richard Yin'; }
 
 .album_classical_arrangements h1 {
 	transform: translateZ(30px);
-	color: rgba(255, 255, 200, 0.5);
+	color: rgba(255, 255, 150, 0.9);
 	font-family: 'Friz Quadrata No. 2 W01';
 }
 .album_classical_arrangements h2 {
 	transform: translateZ(25px);
 	font-family: 'Ysabeau Infant';
-	color: rgba(150, 150, 50, 0.5);
+	color: rgba(170, 170, 80, 0.9);
 	font-weight: 400;
 	font-style: italic;
 }
@@ -1071,43 +1212,16 @@ body {
     left: -6pt;
     filter: blur(12pt);
 }
-/* #name_block:active {
-    transform: rotateX(10deg) rotateY(10deg);
-} */
-#h1_wrapper h1 {
+#name_block h1 {
     /* font-family: 'Alata', Tahoma, Geneva, Verdana, sans-serif; */
     font-family: 'Poltawski Nowy', Georgia, Times, 'Times New Roman', serif;
     font-size: 78pt;
     font-weight: 600;
-    /* color: rgb(226, 252, 97); */
-    color: transparent;
-}
-#h1_wrapper {
-    filter: brightness(125%);
-    background-color: rgb(226, 252, 97);
-    background-image: url("assets/gold.jpg");
-    background-size: 250%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    height: 78pt;
-    transition: 0.2s ease-in-out;
-    animation: move_h1_bg 60s infinite;
-    text-shadow: -3.6pt 3.6pt 3.6pt rgba(255, 255, 255, 0.3);
+    color: rgb(226, 252, 97);
+	height: 78pt;
+    text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8);
     margin: 0px;
     min-width: 720px;
-}
-#h1_wrapper:hover {
-    filter: brightness(150%);
-    text-shadow: -3.6pt 3.6pt 4.8pt rgba(255, 255, 255, 0.35);
-}
-@keyframes move_h1_bg {
-    0% {
-        background-position: 0% 50%;
-    } 50% {
-        background-position: 100% 50%;
-    } 100% {
-        background-position: 0% 50%;
-    }
 }
 
 #name_block span {
@@ -1116,16 +1230,11 @@ body {
     font-weight: 300;
     font-size: 36pt;
     color: rgb(231, 231, 231);
-    text-shadow: 0pt 0pt 6pt rgba(0, 0, 0, 0.5);
+    text-shadow: 0pt 0pt 15px rgba(0, 0, 0, 0.8);
     margin: 0px;
     padding: 0px;
-    transition: 0.2s;
     display: block;
     min-width: 800px;
-}
-#name_block span:hover {
-    color: rgb(244, 244, 244);
-    text-shadow: 0pt 0pt 8.4pt rgba(0, 0, 0, 0.7);
 }
 
 #menu_block {

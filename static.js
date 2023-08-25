@@ -2,6 +2,11 @@ function cssGetId(id) {
 	return document.getElementById(id);
 }
 
+function bound(value, min, max) {
+	if (min > max) throw "Error in bound: " + min + " > " + max;
+	return Math.min(Math.max(value, min), max);
+}
+
 function resizeCanvas() {
 	let canvas = cssGetId('static');
 	canvas.height = window.innerHeight * 0.8;
@@ -12,42 +17,84 @@ function resizeCanvas() {
 
 let TVOn = false;
 let TVAnimationDone = true;
-let staticOn = true;
-let opacity = 1;
-let progress = 1;
-let brightness = 1;
+let opacity = 0;
+let progress = 0;
+let brightness = 0;
 let frameFrequency = 30;
+let forceTVStop = false;
+let flicker = 0;
 
 function turnTVOn() {
+	if (!TVAnimationDone) return;
+	forceTVStop = false;
+	TVOn = true;
+	TVAnimationDone = false;
+	
 	let canvas = cssGetId('static');
 	let context = canvas.getContext('2d');
 	let width = canvas.width;
 	let height = canvas.height;	
 	
-	if (!TVAnimationDone) return;
-	TVOn = true;
-	TVAnimationDone = false;
-	
-	staticLoop(canvas, context, width, height);
-	
-	let frames = Math.round(400 / frameFrequency);
-	for (let i = 1; i <= frames; i++) {
-		setTimeout(() => {
-			progress = 1 - i / frames;
-			brightness = 1 - i / frames;
-		}, i * frameFrequency);
-	}
+	staticLoop(context, width, height);
 }
 
-function staticLoop(canvas, context, width, height) {
+function turnTVOff() {
+	TVOn = false;
+}
+function turnTVDefault() {
+	if (TVAnimationDone || opacity != 0) return;
+	forceTVStop = true;
+	TVAnimationDone = true;
+	opacity = 0;
+	progress = 0;
+	brightness = 0;
+}
+
+function staticLoop(context, width, height) {
 	context.clearRect(0, 0, width, height);
-	
 	drawStatic(context, width, height, opacity, brightness);
 	drawBorders(context, width, height, progress);
 	
+	let deltaOpacity = 0;
+	let deltaBrightness = 0;
+	let deltaProgress = 0;
+	if (TVOn) {
+		deltaBrightness = -0.075;
+		deltaProgress = -0.075;
+		if (progress <= 0.5) {
+			if (flicker > 0) {
+				deltaOpacity = -0.01;
+			} else {
+				deltaOpacity = -0.05;
+			}
+		}
+	} else {
+		deltaOpacity = 0.1;
+		if (opacity >= 0.8) {
+			deltaBrightness = 0.075;
+			deltaProgress = 0.075;
+		}
+	}
+	opacity = bound(opacity + deltaOpacity, 0, 1);
+	brightness = bound(brightness + deltaBrightness, 0 ,1);
+	progress = bound(progress + deltaProgress, 0, 1.1);
+	flicker = bound(flicker - 0.02, 0, 1);
+	
+	TVAnimationDone = (opacity == 1) && (brightness == 1) && (progress == 1.1);
+	
+	if (Math.random() < 0.01) {
+		let rand = Math.random();
+		flicker = rand * 0.5;
+		opacity += rand * 0.3;
+	}
+	
 	setTimeout(() => {
-		if (!TVAnimationDone) window.requestAnimationFrame(() => staticLoop(canvas, context, width, height));
-	}, frameFrequency );
+		if (!TVAnimationDone && !forceTVStop) {
+			window.requestAnimationFrame(() => staticLoop(context, width, height));
+		} else if (forceTVStop) {
+			context.clearRect(0, 0, width, height);
+		}
+	}, frameFrequency);
 }
 function drawBorders(context, width, height, progress) {
 	if (progress == 0) return;
@@ -203,12 +250,16 @@ function drawStatic(context, width, height, opacity, brightness) {
 		}
 		context.fillStyle = gradient;
 		//context.fillRect(-10, offsetY, width + 20, boxHeight);
-		
 		drawWavyBox(context, offsetY, width + 20, boxHeight, false, 10, 5);
 	}
 	// Brightness box
 	context.fillStyle = 'rgba(255, 255, 255, ' + brightness + ')';
 	context.fillRect(0, 0, width, height);
+	
+	// Flicker box
+	context.fillStyle = 'rgba(200, 200, 200, ' + flicker + ')';
+	context.fillRect(0, height / 10, width, height / 3);
+	context.fillRect(0, height / 1.4, width, height / 8);
 	
 	// Bottom black box
 	blackBoxOffsetY = Math.round(gaussianRandom(0.1 * (1 - opacity) + 0.9, opacity * 0.03) * height);
@@ -218,40 +269,3 @@ function drawStatic(context, width, height, opacity, brightness) {
 	context.fillRect(-2, blackBoxOffsetY, width + 4, boxHeight);
 }
 
-function turnTVOff() {
-	if (!TVOn || !staticOn) return;
-	TVOn = false;
-	let frames = Math.round(400 / frameFrequency);
-	for (let i = 1; i <= frames; i++) {
-		setTimeout(() => {
-			progress = (i / frames) ** 2;
-			brightness = (i / frames) ** 0.5;
-		}, i * frameFrequency);
-	}
-	setTimeout(() => {
-		TVAnimationDone = true;
-	}, (frames + 1) * frameFrequency)
-}
-
-
-function turnStaticOff() {
-	if (!TVOn || !staticOn) return;
-	staticOn = false;
-	let frames = Math.round(400 / frameFrequency);
-	for (let i = 1; i <= frames; i++) {
-		setTimeout(() => {
-			opacity = 1 - i / frames;
-		}, i * frameFrequency);
-	}
-}
-
-function turnStaticOn() {
-	if (!TVOn || staticOn) return;
-	staticOn = true;
-	let frames = Math.round(400 / frameFrequency);
-	for (let i = 1; i <= frames; i++) {
-		setTimeout(() => {
-			opacity = i / frames;
-		}, i * frameFrequency);
-	}
-}
